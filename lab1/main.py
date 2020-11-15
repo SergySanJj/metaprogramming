@@ -87,7 +87,7 @@ class GroovyLexer(object):
         return tokens
 
     @staticmethod
-    def lex_id(string: str) -> Tuple[str, str]:
+    def lex_id(string: str, tokens) -> Tuple[str, str]:
         buff = ""
         if string[0].isalpha() or string[0] == '_' or string[0] == '$':
             while len(string):
@@ -103,8 +103,16 @@ class GroovyLexer(object):
         return string in GROOVY_KEYWORDS
 
     @staticmethod
-    def lex_number(string: str) -> Tuple[str, str]:
+    def lex_number(string: str, tokens) -> Tuple[str, str]:
         buff = ""
+        if string[0] == '-' and string[1].isdigit():
+            buff = buff + string[0]
+            string = string[1:]
+
+        if string[0:2] == '0b' or string[0:2] == '0x':
+            buff = string[0:2]
+            string = string[2:]
+
         if string[0].isnumeric():
             while len(string):
                 if string[0].isnumeric() or string[0] == '.':
@@ -112,10 +120,13 @@ class GroovyLexer(object):
                     string = string[1:]
                 else:
                     break
+
+
+
         return buff, string
 
     @staticmethod
-    def lex_space(string: str) -> Tuple[str, str]:
+    def lex_space(string: str, tokens) -> Tuple[str, str]:
         buff = ""
         if string[0] in GROOVY_WHITESPACE:
             buff = buff + string[0]
@@ -123,7 +134,7 @@ class GroovyLexer(object):
         return buff, string
 
     @staticmethod
-    def lex_punctuation(string: str) -> Tuple[str, str]:
+    def lex_punctuation(string: str, tokens) -> Tuple[str, str]:
         buff = ""
         if string[0] in GROOVY_PUNCTUATION:
             buff = buff + string[0]
@@ -131,7 +142,7 @@ class GroovyLexer(object):
         return buff, string
 
     @staticmethod
-    def lex_string(string: str) -> Tuple[str, str]:
+    def lex_string(string: str, tokens) -> Tuple[str, str]:
         buff = ""
         if string[0] in GROOVY_QUOTE:
             quote_type = string[0]
@@ -145,7 +156,7 @@ class GroovyLexer(object):
         return buff, string
 
     @staticmethod
-    def lex_line_comment(string: str) -> Tuple[str, str]:
+    def lex_line_comment(string: str, tokens) -> Tuple[str, str]:
         buff = ""
         if string[0:2] == '//':
             while string[0] != '\n':
@@ -154,7 +165,7 @@ class GroovyLexer(object):
         return buff, string
 
     @staticmethod
-    def lex_multiline_comment(string: str) -> Tuple[str, str]:
+    def lex_multiline_comment(string: str, tokens) -> Tuple[str, str]:
         buff = ""
         if string[0:2] == '/*':
             while string[0:2] != '*/':
