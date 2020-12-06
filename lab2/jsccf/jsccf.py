@@ -6,6 +6,7 @@ import os
 import argparse
 
 from jsccf.jslexer import lex_file
+from jsccf.jsrename import Renamer
 
 
 def main():
@@ -35,7 +36,9 @@ def main():
 
     files = file_args_handler(args)
     code_tree = analyse(files, args)
-    #print(code_tree)
+
+    renames = Renamer()
+    renames.find_declarations(code_tree, args)
 
 
 def file_args_handler(args):
@@ -81,12 +84,9 @@ def file_handler(args):
 def analyse(files, args):
     code_tree = {}
     for f in files:
-        print(f)
         with open(f, 'r') as file:
             file_code = file.read()
         tokens = lex_file(file_code, args)
-        for t in tokens:
-            print(t)
         code_tree[f] = tokens
 
     return code_tree

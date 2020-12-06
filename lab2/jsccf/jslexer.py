@@ -10,9 +10,9 @@ class Token(Enum):
     MULTILINE_COMMENT = 3
     SINGLE_LINE_COMMENT = 4
     WHITESPACE = 5
-    IDENTIFIER = 6
-    KEYWORD = 7
-    JSDOC = 8
+    NEWLINE = 6
+    IDENTIFIER = 7
+    KEYWORD = 8
 
 
 JS_KEYWORDS = [
@@ -31,7 +31,7 @@ JS_KEYWORDS = [
     "super*", "switch", "synchronized", "this",
     "throw", "throws", "transient", "true",
     "try", "typeof", "var", "void",
-    "volatile", "while", "with", "yield",
+    "volatile", "while", "with", "yield", "let", "class", "constructor"
 ]
 
 is_whitespace = re.compile(r"\s+")
@@ -100,6 +100,10 @@ def lex_file(content: str, args) -> List[Tuple[str, Token, int]]:
                 tokens.append((buff, Token.MULTILINE_COMMENT, count_newlines(s, start_pos)))
                 buff = ""
                 continue
+        elif s[pos] == "\n":
+            tokens.append((s[pos], Token.NEWLINE, count_newlines(s, pos)))
+            pos += 1
+            continue
         elif is_whitespace.fullmatch(s[pos]):
             tokens.append((s[pos], Token.WHITESPACE, count_newlines(s, pos)))
             pos += 1
