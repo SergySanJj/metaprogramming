@@ -1,7 +1,13 @@
+import re
 from setuptools import setup
 
-with open("README.md", "r") as f:
-    long_description = f.read()
+version = re.search(
+    r'^__version__\s*=\s*"(.*)"',
+    open('jsccf/jsccf.py').read()
+).group(1)
+
+with open("Readme.md", "rb") as f:
+    long_description = f.read().decode("utf-8")
 
 setup(
     name="jsccf",
@@ -9,7 +15,7 @@ setup(
     entry_points={
         "console_scripts": ['jsccf = jsccf.jsccf:main']
     },
-    version='0.0.1',
+    version=version,
     description="Renaming and documenting tool for JavaScript",
     long_description=long_description,
     long_description_content_type='text/markdown',
