@@ -5,6 +5,8 @@ import logging
 import os
 import argparse
 
+from jsccf.jslexer import lex_file
+
 
 def main():
     logger = logging.getLogger()
@@ -31,7 +33,9 @@ def main():
     logging.info(f'Parser args')
     logging.info(args)
 
-    file_args_handler(args)
+    files = file_args_handler(args)
+    code_tree = analyse(files, args)
+    #print(code_tree)
 
 
 def file_args_handler(args):
@@ -51,6 +55,7 @@ def file_args_handler(args):
 
     files = handler_func(args)
     logging.info(f'Analysing {len(files)} files')
+    return files
 
 
 def project_handler(args):
@@ -71,3 +76,17 @@ def directory_handler(args):
 
 def file_handler(args):
     return glob.glob(args.f)
+
+
+def analyse(files, args):
+    code_tree = {}
+    for f in files:
+        print(f)
+        with open(f, 'r') as file:
+            file_code = file.read()
+        tokens = lex_file(file_code, args)
+        for t in tokens:
+            print(t)
+        code_tree[f] = tokens
+
+    return code_tree
