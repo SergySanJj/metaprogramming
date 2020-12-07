@@ -41,7 +41,7 @@ JS_KEYWORDS = [
     "super*", "switch", "synchronized", "this",
     "throw", "throws", "transient", "true",
     "try", "typeof", "var", "void",
-    "volatile", "while", "with", "yield", "let", "class", "constructor", "exports"
+    "volatile", "while", "with", "yield", "let", "class", "exports"
 ]
 
 is_whitespace = re.compile(r"\s+")
