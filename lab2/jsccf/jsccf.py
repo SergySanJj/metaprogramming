@@ -73,7 +73,7 @@ def directory_handler(args):
     res = []
     for file in os.listdir(args.d):
         if file.endswith('.js'):
-            res.append(file)
+            res.append(os.path.join(args.d, file))
     return res
 
 
@@ -84,6 +84,7 @@ def file_handler(args):
 def analyse(files, args):
     code_tree = {}
     for f in files:
+        print(f)
         with open(f, 'r') as file:
             file_code = file.read()
         tokens = lex_file(file_code, args)
