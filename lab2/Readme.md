@@ -29,3 +29,14 @@ Renaming and documenting tool for JavaScript
 # Requirements
 
 - python>=3.6
+
+
+## Implemented
+- Renaming classes
+- Renaming global functions
+- Renaming class methods
+- Renaming constants
+- Renaming variables
+
+
+- Documentation basics generation for classes, files, functions and class methods

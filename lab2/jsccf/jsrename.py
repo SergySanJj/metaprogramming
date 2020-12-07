@@ -30,6 +30,7 @@ class Scopes(Enum):
     CONDITION = 7
     IF_ELSE = 8
     CLASS_METHOD = 9
+    CALL_ARGS = 10
 
 
 class Scope:
@@ -75,7 +76,6 @@ class Renamer:
 
     def find_declarations(self, code_tree: Dict[str, List[Token]], args):
         for f, k in code_tree.items():
-            # print(f)
             i = 0
             global_scope = Scope(0, "", Scopes.GLOBAL)
             global_scope.end = len(k)
@@ -89,18 +89,13 @@ class Renamer:
                     i += 1
                     continue
 
-                # if t != TokenType.NEWLINE:
-                #     print(i, cur_t, "SCOPE:              ", [s.state for s in scopes])
-
                 if t == TokenType.IDENTIFIER:
                     if scopes[len(scopes) - 1].state == Scopes.CLASS:
-                        # print("IDENTIFIER INSIDE CLASS", cur_t)
 
                         # check on class method
                         start_pos = self.next_t(i, k, text_not_in=["(", ";", ".", "{"],
                                                 token_type_not_in=[TokenType.IDENTIFIER, TokenType.KEYWORD])
                         if start_pos < len(k) and k[start_pos].text == "(":
-                            # print("Can see possible function start")
                             has_func_body = self.next_t(start_pos, k, text_not_in=["{", ".", ";", "("],
                                                         token_type_not_in=[TokenType.KEYWORD])
 
@@ -114,13 +109,9 @@ class Renamer:
                                 scopes.append(func_args)
 
                                 continue
-                        #     else:
-                        #         print("No it's method call")
-                        # else:
-                        #     print("No it's dict")
 
                         # check on class variable
-                        tt, start_pos = self.next_t(i, k, text_not_in=["=", ";", "."])
+                        start_pos = self.next_t(i, k, text_not_in=["=", ";", "."])
 
                         if start_pos < len(k) and k[start_pos].text == "=":
                             self.declarations.append(Declaration(f, k[i], IdentifierType.CLASS_VARIABLE,
@@ -129,7 +120,6 @@ class Renamer:
                             continue
 
                     elif scopes[len(scopes) - 1].state in [Scopes.METHOD, Scopes.CLASS_METHOD, Scopes.GLOBAL]:
-                        # print("IDENTIFIER INSIDE METHOD or CLASS METHOD or GLOBAL")
 
                         if scopes[len(scopes) - 1].state not in [Scopes.GLOBAL]:
                             # check on function
@@ -165,6 +155,8 @@ class Renamer:
                                         i = start_pos
                                         continue
 
+
+
                         # check on variable
                         search_p = self.prev_t(i, k, text_not_in=["let", "const", "var"],
                                                token_type_not_in=[TokenType.SKIP, TokenType.IDENTIFIER])
@@ -185,6 +177,9 @@ class Renamer:
                                 dict_scope = Scope(i, "}", Scopes.DICT)
                                 scopes.append(dict_scope)
 
+
+
+
                 elif t == TokenType.KEYWORD and cur_t.text == "class":
                     class_scope = Scope(i, "}", Scopes.CLASS)
                     scopes.append(class_scope)
@@ -196,7 +191,6 @@ class Renamer:
                     while i < len(k) and k[i].text != "{":
                         i += 1
                     if k[i].text == "{":
-                        # print("CLASS START")
                         class_scope.start = i
                     i += 1
                     continue
@@ -212,7 +206,7 @@ class Renamer:
                                 func_args = Scope(f_args, ")", Scopes.ARGUMENTS)
                                 self.declarations.append(Declaration(f, k[f_name], IdentifierType.FUNCTION,
                                                                      scopes[len(scopes) - 1]))
-                                print(scopes[len(scopes) - 1])
+
                                 scopes.append(function_scope)
                                 scopes.append(func_args)
                                 i = f_args + 1
@@ -228,7 +222,7 @@ class Renamer:
                                 func_args = Scope(f_args, ")", Scopes.ARGUMENTS)
                                 self.declarations.append(Declaration(f, k[f_name], IdentifierType.FUNCTION,
                                                                      scopes[len(scopes) - 1]))
-                                print(scopes[len(scopes) - 1])
+
                                 scopes.append(function_scope)
                                 scopes.append(func_args)
                                 i = f_args + 1
@@ -247,8 +241,6 @@ class Renamer:
                     elif cur_t.text in ["}", "]", ")"] and len(scopes) > 0:
                         if scopes[len(scopes) - 1].closing_symbol == cur_t.text:
                             scopes[len(scopes) - 1].end = i
-                            # print("SETTING END")
-                            # print("Scope ", scopes[len(scopes) - 1])
                             scopes.pop()
                     i += 1
                     continue
@@ -257,18 +249,20 @@ class Renamer:
                     continue
                 i += 1
 
-        # for s in self.declarations:
-        #     print(s)
         return self.declarations
 
     def has_declaration(self, token, token_file, token_pos):
+        decl = self.get_declaration(token, token_file, token_pos)
+        return decl is not None
+
+    def get_declaration(self, token, token_file, token_pos):
         for s in self.declarations:
             if s.file == token_file:
                 if s.identifier_token.text == token.text:
-                    print(s.scope.start, s.scope.end, "     ", token_pos)
+
                     if s.scope.start <= token_pos <= s.scope.end:
-                        return True
-        return False
+                        return s
+        return None
 
     def find_scope_end(self, end_symbol, search_start, tokens: List[Token]):
         i = search_start
@@ -302,17 +296,12 @@ class Renamer:
         return search_p
 
     def build_references(self, code_tree: Dict[str, List[Token]], args):
-        for d in self.declarations:
-            print(d.identifier_token.text)
-
         for f, k in code_tree.items():
-            # print(f)
             i = 0
-
             while i < len(k):
                 cur_t = k[i]
-                t = cur_t.token_type
-
-                if t == TokenType.IDENTIFIER:
-                    print(cur_t, self.has_declaration(cur_t, f, i))
+                if (cur_t.token_type == TokenType.IDENTIFIER):
+                    if self.has_declaration(cur_t, f, i):
+                        dec = self.get_declaration(cur_t, f, i)
+                        dec.add_reference(cur_t)
                 i += 1

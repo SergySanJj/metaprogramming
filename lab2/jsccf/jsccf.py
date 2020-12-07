@@ -30,15 +30,21 @@ def main():
     # TODO: add file versions
     logger.addHandler(logging.FileHandler(os.path.join(args.out_log, '_verification.log'), 'w'))
 
-    logging.info(f'Parser args')
-    logging.info(args)
-
     files = file_args_handler(args)
     code_tree = analyse(files, args)
 
     renames = Renamer()
     renames.find_declarations(code_tree, args)
     renames.build_references(code_tree, args)
+
+    for dec in renames.declarations:
+        dec.rename(dec.identifier_token.text.upper())
+
+    s = ""
+    for f, c in code_tree.items():
+        for t in c:
+            s += t.text
+    print(s)
 
 
 def file_args_handler(args):
@@ -57,7 +63,6 @@ def file_args_handler(args):
         raise ValueError('Arguments are ambiguous, please specify single(-p | -d | -f) arg')
 
     files = handler_func(args)
-    logging.info(f'Analysing {len(files)} files')
     return files
 
 
@@ -84,7 +89,6 @@ def file_handler(args):
 def analyse(files, args):
     code_tree = {}
     for f in files:
-        print(f)
         with open(f, 'r') as file:
             file_code = file.read()
         tokens = lex_file(file_code, args)
