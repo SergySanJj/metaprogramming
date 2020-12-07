@@ -6,8 +6,9 @@ version = re.search(
     open('jsccf/jsccf.py').read()
 ).group(1)
 
-with open("Readme.md", "rb") as f:
-    long_description = f.read().decode("utf-8")
+
+with open("Readme.md", "r") as f:
+    long_description = f.read()
 
 setup(
     name="jsccf",
