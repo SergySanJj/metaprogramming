@@ -23,8 +23,7 @@ def main():
 
     ap.add_argument('-v', '--verify', action='store_true', help="Use verification <no-args>")
     ap.add_argument('-fix', action='store_true', help="Fix and save result files output <no-args>")
-    ap.add_argument('-use-dollar', action='store_true',
-                    help="Variables can have dollar sign as first character <no-args>")
+
     args = ap.parse_args()
 
     os.makedirs(args.out_log, exist_ok=True)
@@ -39,6 +38,7 @@ def main():
 
     renames = Renamer()
     renames.find_declarations(code_tree, args)
+    renames.build_references(code_tree, args)
 
 
 def file_args_handler(args):
