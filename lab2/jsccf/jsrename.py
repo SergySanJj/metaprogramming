@@ -77,7 +77,6 @@ class Renamer:
         for f, k in code_tree.items():
             print(f)
             i = 0
-            balance = 0
             global_scope = Scope(0, "", Scopes.GLOBAL)
             global_scope.end = len(k)
             scopes = [global_scope]
@@ -98,19 +97,12 @@ class Renamer:
                         print("IDENTIFIER INSIDE CLASS", cur_t)
 
                         # check on class method
-                        tt, start_pos = self.next_t(i, k)
-                        # start_pos = i + 1
-                        # while start_pos < len(k) and k[start_pos].text != "(" \
-                        #         and k[start_pos].text not in [";", ".", "{"] \
-                        #         and k[start_pos].token_type not in \
-                        #         [TokenType.IDENTIFIER, TokenType.KEYWORD]:
-                        #     start_pos += 1
+                        start_pos = self.next_t(i, k, text_not_in=["(", ";", ".", "{"],
+                                                token_type_not_in=[TokenType.IDENTIFIER, TokenType.KEYWORD])
                         if start_pos < len(k) and k[start_pos].text == "(":
                             print("Can see possible function start")
-                            has_func_body = start_pos + 1
-                            while has_func_body < len(k) and k[has_func_body].text not in ["{", ".", ";", "("] \
-                                    and k[has_func_body].token_type not in [TokenType.KEYWORD]:
-                                has_func_body += 1
+                            has_func_body = self.next_t(start_pos, k, text_not_in=["{", ".", ";", "("],
+                                                        token_type_not_in=[TokenType.KEYWORD])
 
                             if has_func_body < len(k) and k[has_func_body].text == "{":
                                 function_scope = Scope(has_func_body, "}", Scopes.CLASS_METHOD)
@@ -128,11 +120,9 @@ class Renamer:
                             print("No it's dict")
 
                         # check on class variable
-                        start_pos = i + 1
-                        while start_pos < len(k) and k[start_pos].text != "=" \
-                                and k[start_pos].text not in [";", "."]:
-                            start_pos += 1
-                        if k[start_pos].text == "=":
+                        tt, start_pos = self.next_t(i, k, text_not_in=["=", ";", "."])
+
+                        if start_pos < len(k) and k[start_pos].text == "=":
                             self.declarations.append(Declaration(f, k[i], IdentifierType.CLASS_VARIABLE,
                                                                  scopes[len(scopes) - 1]))
                             i += 1
@@ -142,57 +132,48 @@ class Renamer:
                         print("IDENTIFIER INSIDE METHOD or CLASS METHOD or GLOBAL")
 
                         # check on function
-                        func_pos = i
-                        start_pos = i + 1
-                        while start_pos < len(k) and k[start_pos].text != "(" \
-                                and k[start_pos].text not in [";", ".", "{"]:
-                            start_pos += 1
+                        start_pos = self.next_t(i, k, text_not_in=["(", ";", ".", "{"])
                         if start_pos < len(k) and k[start_pos].text == "(":
                             print("Can see possible function start")
-                            has_func_body = start_pos + 1
-                            while has_func_body < len(k) and k[has_func_body].text not in ["{", ".", ";", "("] \
-                                    and k[has_func_body].token_type not in [TokenType.KEYWORD]:
-                                has_func_body += 1
-
+                            has_func_body = self.next_t(start_pos, k, text_not_in=["{", ".", ";", "("],
+                                                        token_type_not_in=[TokenType.KEYWORD])
                             if has_func_body < len(k) and k[has_func_body].text == "{":
                                 function_scope = Scope(has_func_body, "}", Scopes.METHOD)
                                 scopes.append(function_scope)
 
                                 self.declarations.append(Declaration(f, k[i], IdentifierType.FUNCTION,
-                                                                     scopes[len(scopes) - 2]))
+                                                                     scopes[len(scopes) - 1]))
                                 func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
                                 scopes.append(func_args)
-
+                                i = start_pos
                                 continue
                             else:
                                 print("No it's method call")
                         else:
-                            print("No it's dict")
+                            print("No it's variable")
 
                         # check on variable
-                        search_p = i - 1
-                        while search_p > 0 and k[search_p].text not in ["let", "const", "var"] \
-                                and k[search_p].token_type != TokenType.SKIP \
-                                and k[search_p].token_type != TokenType.IDENTIFIER:
-                            search_p -= 1
-
-                        if k[search_p].text in VARIABLE_KEYWORDS:
+                        search_p = self.prev_t(i, k, text_not_in=["let", "const", "var"],
+                                               token_type_not_in=[TokenType.SKIP, TokenType.IDENTIFIER])
+                        if search_p >= 0 and k[search_p].text in VARIABLE_KEYWORDS:
                             variable_scope = scopes[len(scopes) - 1] if k[search_p].text == "let" else \
                                 scopes[len(scopes) - 2]
                             self.declarations.append(Declaration(f, k[i], IdentifierType.VARIABLE, variable_scope))
                             i += 1
-                            continue
-                        elif k[search_p].text in CONST_KEYWORDS:
+                        elif search_p >= 0 and k[search_p].text in CONST_KEYWORDS:
                             variable_scope = scopes[len(scopes) - 1]
                             self.declarations.append(Declaration(f, k[i], IdentifierType.CONST, variable_scope))
                             i += 1
-                            continue
 
-
+                        if search_p >= 0 and k[search_p].text in ["let", "var", "const"]:
+                            dict_search = self.next_t(search_p, k, text_not_in=["{", ";"],
+                                                      token_type_not_in=[TokenType.KEYWORD, TokenType.IDENTIFIER])
+                            if dict_search < len(k) and k[dict_search].text == "{":
+                                dict_scope = Scope(i, "}", Scopes.DICT)
+                                scopes.append(dict_scope)
 
                 elif t == TokenType.KEYWORD and cur_t.text == "class":
                     class_scope = Scope(i, "}", Scopes.CLASS)
-                    balance += 1
                     scopes.append(class_scope)
                     while i < len(k) and k[i].token_type != TokenType.IDENTIFIER:
                         i += 1
@@ -207,43 +188,49 @@ class Renamer:
                     i += 1
                     continue
                 elif t == TokenType.KEYWORD and cur_t.text == "function":
-                    function_scope = Scope(i, "}", Scopes.METHOD)
-                    balance += 1
-                    scopes.append(function_scope)
-                    while i < len(k) and k[i].text != "(":
-                        i += 1
                     # function f(){}
+                    f_name = self.next_t(i, k, text_not_in=["(", "{"], token_type_not_in=[TokenType.IDENTIFIER])
+                    if f_name < len(k) and k[f_name].token_type == TokenType.IDENTIFIER:
+                        f_args = self.next_t(f_name, k, text_not_in=["("])
+                        f_body = self.next_t(f_name, k, text_not_in=["{"])
+                        if f_args < len(k) and k[f_args].text == "(":
+                            if f_body < len(k) and k[f_body] == "{":
+                                function_scope = Scope(f_body, "}", Scopes.METHOD)
+                                func_args = Scope(f_args, ")", Scopes.ARGUMENTS)
+                                scopes.append(function_scope)
+                                scopes.append(func_args)
+                                self.declarations.append(Declaration(f, k[f_name], IdentifierType.FUNCTION,
+                                                                     function_scope))
+                                i = f_args + 1
+                                continue
                     # var|let|const f = function () {}
-                    if k[i].text == "(":
-                        search_pos = i
-                        while search_pos > 0 and k[search_pos].token_type != TokenType.IDENTIFIER:
-                            search_pos -= 1
-                        if k[search_pos].token_type == TokenType.IDENTIFIER:
-                            self.declarations.append(Declaration(f, k[search_pos], IdentifierType.FUNCTION,
-                                                                 function_scope))
-                        func_args = Scope(i, ")", Scopes.ARGUMENTS)
-                        scopes.append(func_args)
-
-                        search_pos = i
-                        while search_pos < len(k) and k[search_pos].text != "{":
-                            search_pos += 1
-                        if k[search_pos].text == "{":
-                            function_scope.start = search_pos
-
-                    continue
+                    elif f_name < len(k) and k[f_name].text == "(":
+                        f_args = f_name
+                        f_name = self.prev_t(i, k, token_type_not_in=[TokenType.IDENTIFIER])
+                        if f_name < len(k) and k[f_name].token_type == TokenType.IDENTIFIER:
+                            f_body = self.next_t(i, k, text_not_in=["{"])
+                            if f_body < len(k) and k[f_body].text == "{":
+                                function_scope = Scope(f_body, "}", Scopes.METHOD)
+                                func_args = Scope(f_args, ")", Scopes.ARGUMENTS)
+                                scopes.append(function_scope)
+                                scopes.append(func_args)
+                                self.declarations.append(Declaration(f, k[f_name], IdentifierType.FUNCTION,
+                                                                     function_scope))
+                                i = f_args + 1
+                                continue
 
                 elif t == TokenType.SKIP:
                     if cur_t.text == "[":
                         list_scope = Scope(i, "]", Scopes.LIST)
                         scopes.append(list_scope)
-                    elif cur_t.text == "{" and scopes[len(scopes) - 1].state not in [Scopes.METHOD,
-                                                                                     Scopes.CLASS_METHOD]:
-                        dict_scope = Scope(i, "}", Scopes.DICT)
-                        scopes.append(dict_scope)
+                    elif cur_t.text == "{":
+                        if scopes[len(scopes) - 1].state in [Scopes.METHOD, Scopes.CLASS_METHOD]:
+                            if scopes[len(scopes) - 1].start != i:
+                                dict_scope = Scope(i, "}", Scopes.DICT)
+                                scopes.append(dict_scope)
 
                     elif cur_t.text in ["}", "]", ")"] and len(scopes) > 0:
                         if scopes[len(scopes) - 1].closing_symbol == cur_t.text:
-                            balance -= 1
                             scopes[len(scopes) - 1].end = i
                             print("SETTING END")
                             print("Scope ", scopes[len(scopes) - 1])
@@ -278,16 +265,27 @@ class Renamer:
         else:
             return -1
 
-    def prev_t(self, pos, k: List[Token]):
+    def prev_t(self, pos, k: List[Token], text_not_in=None, token_type_not_in=None):
+        if token_type_not_in is None:
+            token_type_not_in = []
+        if text_not_in is None:
+            text_not_in = []
         search_p = pos - 1
-        while search_p > 0 and k[search_p].token_type in [TokenType.WHITESPACE, TokenType.NEWLINE]:
+        while search_p > 0 and k[search_p].token_type not in token_type_not_in \
+                and k[search_p].text not in text_not_in:
             search_p -= 1
-        if k[search_p].token_type not in [TokenType.WHITESPACE, TokenType.NEWLINE]:
-            return k[search_p], search_p
+        return search_p
 
-    def next_t(self, pos, k: List[Token]):
+    def next_t(self, pos, k: List[Token], text_not_in=None, token_type_not_in=None):
+        if token_type_not_in is None:
+            token_type_not_in = []
+        if text_not_in is None:
+            text_not_in = []
         search_p = pos + 1
-        while search_p < len(k) and k[search_p].token_type in [TokenType.WHITESPACE, TokenType.NEWLINE]:
+        while search_p < len(k) and k[search_p].token_type not in token_type_not_in \
+                and k[search_p].text not in text_not_in:
             search_p += 1
-        if k[search_p].token_type not in [TokenType.WHITESPACE, TokenType.NEWLINE]:
-            return k[search_p], search_p
+        return search_p
+
+    def build_references(self, code_tree: Dict[str, List[Token]], args):
+        pass
