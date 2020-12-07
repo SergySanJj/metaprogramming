@@ -91,33 +91,80 @@ class Renamer:
                     continue
 
                 if t != TokenType.NEWLINE:
-                    print(i, cur_t)
+                    print(i, cur_t, "SCOPE:              ", scopes[len(scopes) - 1].state)
 
                 if t == TokenType.IDENTIFIER:
                     if scopes[len(scopes) - 1].state == Scopes.CLASS:
-                        # print("IDENTIFIER INSIDE CLASS")
-                        start_pos = i
-                        while start_pos < len(k) and k[start_pos].text != "(" \
-                                and k[start_pos].text != ";":
-                            start_pos += 1
-                        if k[start_pos].text == "(":
-                            function_scope = Scope(start_pos, "}", Scopes.CLASS_METHOD)
-                            scopes.append(function_scope)
-                            self.declarations.append(Declaration(f, k[i], IdentifierType.CLASS_METHOD,
-                                                                 scopes[len(scopes) - 2]))
-                            func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
-                            scopes.append(func_args)
-                            i = start_pos
+                        print("IDENTIFIER INSIDE CLASS", cur_t)
 
-                            while start_pos < len(k) and k[start_pos].text != "{":
-                                start_pos += 1
-                            if k[start_pos].text == "{":
-                                function_scope.start = start_pos
-                        else:
+                        # check on class method
+                        start_pos = i + 1
+                        while start_pos < len(k) and k[start_pos].text != "(" \
+                                and k[start_pos].text not in [";", "."] \
+                                and k[start_pos].token_type not in \
+                                [TokenType.IDENTIFIER, TokenType.KEYWORD]:
+                            start_pos += 1
+                        if start_pos < len(k) and k[start_pos].text == "(":
+                            print("Can see possible function start")
+                            has_func_body = start_pos + 1
+                            while has_func_body < len(k) and k[has_func_body].text not in ["{", ".", ";"] \
+                                    and k[has_func_body].token_type not in [TokenType.KEYWORD]:
+                                has_func_body += 1
+
+                            if k[has_func_body].text == "{":
+                                function_scope = Scope(has_func_body, "}", Scopes.CLASS_METHOD)
+                                scopes.append(function_scope)
+
+                                self.declarations.append(Declaration(f, k[i], IdentifierType.CLASS_METHOD,
+                                                                     scopes[len(scopes) - 2]))
+                                func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
+                                scopes.append(func_args)
+
+                                continue
+                            else:
+                                print("No it's method call")
+
+                        # check on class variable
+                        start_pos = i + 1
+                        while start_pos < len(k) and k[start_pos].text != "=" \
+                                and k[start_pos].text not in [";", "."]:
+                            start_pos += 1
+                        if k[start_pos].text == "=":
+                            self.declarations.append(Declaration(f, k[i], IdentifierType.CLASS_VARIABLE,
+                                                                 scopes[len(scopes) - 1]))
+                            i += 1
                             continue
-                        continue
+
                     elif scopes[len(scopes) - 1].state in [Scopes.METHOD, Scopes.CLASS_METHOD]:
                         print("IDENTIFIER INSIDE METHOD or CLASS METHOD")
+
+                        # check on function
+                        func_pos = i
+                        start_pos = i + 1
+                        while start_pos < len(k) and k[start_pos].text != "(" \
+                                and k[start_pos].text not in [";", "."]:
+                            start_pos += 1
+                        if start_pos < len(k) and k[start_pos].text == "(":
+                            print("Can see possible function start")
+                            has_func_body = start_pos + 1
+                            while has_func_body < len(k) and k[has_func_body].text not in ["{", ".", ";"] \
+                                    and k[has_func_body].token_type not in [TokenType.KEYWORD]:
+                                has_func_body += 1
+
+                            if k[has_func_body].text == "{":
+                                function_scope = Scope(has_func_body, "}", Scopes.METHOD)
+                                scopes.append(function_scope)
+
+                                self.declarations.append(Declaration(f, k[i], IdentifierType.FUNCTION,
+                                                                     scopes[len(scopes) - 2]))
+                                func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
+                                scopes.append(func_args)
+
+                                continue
+                            else:
+                                print("No it's method call")
+
+                        # check on variable
                         search_p = i - 1
                         while search_p > 0 and k[search_p].text not in ["let", "const", "var"] \
                                 and k[search_p].token_type != TokenType.SKIP \
@@ -136,23 +183,7 @@ class Renamer:
                             i += 1
                             continue
 
-                        start_pos = i
-                        while start_pos < len(k) and k[start_pos].text != "(" \
-                                and k[start_pos].text != ";":
-                            start_pos += 1
-                        if k[start_pos].text == "(":
-                            function_scope = Scope(start_pos, "}", Scopes.METHOD)
-                            scopes.append(function_scope)
-                            self.declarations.append(Declaration(f, k[i], IdentifierType.FUNCTION,
-                                                                 scopes[len(scopes) - 2]))
-                            func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
-                            scopes.append(func_args)
-                            i = start_pos
 
-                            while start_pos < len(k) and k[start_pos].text != "{":
-                                start_pos += 1
-                            if start_pos < len(k) and k[start_pos].text == "{":
-                                function_scope.start = start_pos
 
                 elif t == TokenType.KEYWORD and cur_t.text == "class":
                     class_scope = Scope(i, "}", Scopes.CLASS)
@@ -166,6 +197,7 @@ class Renamer:
                     while i < len(k) and k[i].text != "{":
                         i += 1
                     if k[i].text == "{":
+                        print("CLASS START")
                         class_scope.start = i
                     i += 1
                     continue
