@@ -91,27 +91,28 @@ class Renamer:
                     continue
 
                 if t != TokenType.NEWLINE:
-                    print(i, cur_t, "SCOPE:              ", scopes[len(scopes) - 1].state)
+                    print(i, cur_t, "SCOPE:              ", [s.state for s in scopes])
 
                 if t == TokenType.IDENTIFIER:
                     if scopes[len(scopes) - 1].state == Scopes.CLASS:
                         print("IDENTIFIER INSIDE CLASS", cur_t)
 
                         # check on class method
-                        start_pos = i + 1
-                        while start_pos < len(k) and k[start_pos].text != "(" \
-                                and k[start_pos].text not in [";", "."] \
-                                and k[start_pos].token_type not in \
-                                [TokenType.IDENTIFIER, TokenType.KEYWORD]:
-                            start_pos += 1
+                        tt, start_pos = self.next_t(i, k)
+                        # start_pos = i + 1
+                        # while start_pos < len(k) and k[start_pos].text != "(" \
+                        #         and k[start_pos].text not in [";", ".", "{"] \
+                        #         and k[start_pos].token_type not in \
+                        #         [TokenType.IDENTIFIER, TokenType.KEYWORD]:
+                        #     start_pos += 1
                         if start_pos < len(k) and k[start_pos].text == "(":
                             print("Can see possible function start")
                             has_func_body = start_pos + 1
-                            while has_func_body < len(k) and k[has_func_body].text not in ["{", ".", ";"] \
+                            while has_func_body < len(k) and k[has_func_body].text not in ["{", ".", ";", "("] \
                                     and k[has_func_body].token_type not in [TokenType.KEYWORD]:
                                 has_func_body += 1
 
-                            if k[has_func_body].text == "{":
+                            if has_func_body < len(k) and k[has_func_body].text == "{":
                                 function_scope = Scope(has_func_body, "}", Scopes.CLASS_METHOD)
                                 scopes.append(function_scope)
 
@@ -123,6 +124,8 @@ class Renamer:
                                 continue
                             else:
                                 print("No it's method call")
+                        else:
+                            print("No it's dict")
 
                         # check on class variable
                         start_pos = i + 1
@@ -135,23 +138,23 @@ class Renamer:
                             i += 1
                             continue
 
-                    elif scopes[len(scopes) - 1].state in [Scopes.METHOD, Scopes.CLASS_METHOD]:
-                        print("IDENTIFIER INSIDE METHOD or CLASS METHOD")
+                    elif scopes[len(scopes) - 1].state in [Scopes.METHOD, Scopes.CLASS_METHOD, Scopes.GLOBAL]:
+                        print("IDENTIFIER INSIDE METHOD or CLASS METHOD or GLOBAL")
 
                         # check on function
                         func_pos = i
                         start_pos = i + 1
                         while start_pos < len(k) and k[start_pos].text != "(" \
-                                and k[start_pos].text not in [";", "."]:
+                                and k[start_pos].text not in [";", ".", "{"]:
                             start_pos += 1
                         if start_pos < len(k) and k[start_pos].text == "(":
                             print("Can see possible function start")
                             has_func_body = start_pos + 1
-                            while has_func_body < len(k) and k[has_func_body].text not in ["{", ".", ";"] \
+                            while has_func_body < len(k) and k[has_func_body].text not in ["{", ".", ";", "("] \
                                     and k[has_func_body].token_type not in [TokenType.KEYWORD]:
                                 has_func_body += 1
 
-                            if k[has_func_body].text == "{":
+                            if has_func_body < len(k) and k[has_func_body].text == "{":
                                 function_scope = Scope(has_func_body, "}", Scopes.METHOD)
                                 scopes.append(function_scope)
 
@@ -163,6 +166,8 @@ class Renamer:
                                 continue
                             else:
                                 print("No it's method call")
+                        else:
+                            print("No it's dict")
 
                         # check on variable
                         search_p = i - 1
@@ -224,10 +229,19 @@ class Renamer:
                             search_pos += 1
                         if k[search_pos].text == "{":
                             function_scope.start = search_pos
+
                     continue
 
                 elif t == TokenType.SKIP:
-                    if cur_t.text in ["}", "]", ")"] and len(scopes) > 0:
+                    if cur_t.text == "[":
+                        list_scope = Scope(i, "]", Scopes.LIST)
+                        scopes.append(list_scope)
+                    elif cur_t.text == "{" and scopes[len(scopes) - 1].state not in [Scopes.METHOD,
+                                                                                     Scopes.CLASS_METHOD]:
+                        dict_scope = Scope(i, "}", Scopes.DICT)
+                        scopes.append(dict_scope)
+
+                    elif cur_t.text in ["}", "]", ")"] and len(scopes) > 0:
                         if scopes[len(scopes) - 1].closing_symbol == cur_t.text:
                             balance -= 1
                             scopes[len(scopes) - 1].end = i
@@ -263,3 +277,17 @@ class Renamer:
             return i
         else:
             return -1
+
+    def prev_t(self, pos, k: List[Token]):
+        search_p = pos - 1
+        while search_p > 0 and k[search_p].token_type in [TokenType.WHITESPACE, TokenType.NEWLINE]:
+            search_p -= 1
+        if k[search_p].token_type not in [TokenType.WHITESPACE, TokenType.NEWLINE]:
+            return k[search_p], search_p
+
+    def next_t(self, pos, k: List[Token]):
+        search_p = pos + 1
+        while search_p < len(k) and k[search_p].token_type in [TokenType.WHITESPACE, TokenType.NEWLINE]:
+            search_p += 1
+        if k[search_p].token_type not in [TokenType.WHITESPACE, TokenType.NEWLINE]:
+            return k[search_p], search_p
