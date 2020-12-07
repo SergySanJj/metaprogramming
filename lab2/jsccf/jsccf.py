@@ -70,7 +70,8 @@ def project_handler(args):
     res = []
     for subdir, dirs, files in os.walk(args.p):
         for file in files:
-            res.append(os.path.join(subdir, file))
+            if file.endswith('.js'):
+                res.append(os.path.join(subdir, file))
     return res
 
 
@@ -89,9 +90,11 @@ def file_handler(args):
 def analyse(files, args):
     code_tree = {}
     for f in files:
-        with open(f, 'r') as file:
-            file_code = file.read()
-        tokens = lex_file(file_code, args)
-        code_tree[f] = tokens
+        if f.endswith(".js"):
+            print(f)
+            with open(f, 'r', encoding='utf-8') as file:
+                file_code = file.read()
+            tokens = lex_file(file_code, args)
+            code_tree[f] = tokens
 
     return code_tree

@@ -4,7 +4,7 @@ Renaming and documenting tool for JavaScript
 
 # Installation
 
-    pip install jsccf
+    pip install jsccf==0.7.0
     
 
 # Commands help

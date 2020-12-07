@@ -13,6 +13,7 @@ class TokenType(Enum):
     NEWLINE = 6
     IDENTIFIER = 7
     KEYWORD = 8
+    NUMBER = 9
 
 
 class Token:
@@ -47,6 +48,7 @@ JS_KEYWORDS = [
 is_whitespace = re.compile(r"\s+")
 is_token_start = re.compile(r"[a-zA-Z_\$]")
 is_token_inside = re.compile(r"[a-zA-Z_0-9\$]*")
+is_number = re.compile(r"[0-9\.]*")
 
 
 def count_newlines(s, pos):
@@ -91,7 +93,7 @@ def lex_file(content: str, args) -> List[Token]:
             if pos < len(s) and s[pos] == "/":
                 buff += s[pos]
                 pos += 1
-                while s[pos] != '\n' and pos < len(s):
+                while pos < len(s) and s[pos] != '\n':
                     buff += s[pos]
                     pos += 1
                 tokens.append(Token(buff, TokenType.SINGLE_LINE_COMMENT, count_newlines(s, pos)))
@@ -130,6 +132,14 @@ def lex_file(content: str, args) -> List[Token]:
                 tokens.append(Token(buff, TokenType.IDENTIFIER, count_newlines(s, pos)))
             buff = ""
             continue
+        elif is_number.fullmatch(s[pos:pos+2]):
+            buff += s[pos]
+            pos += 1
+            while pos < len(s) and is_number.fullmatch(s[pos]):
+                buff += s[pos]
+                pos += 1
+            tokens.append(Token(buff, TokenType.NUMBER, count_newlines(s, pos)))
+            print(buff)
         else:
             tokens.append(Token(s[pos], TokenType.SKIP, count_newlines(s, pos)))
             pos += 1
