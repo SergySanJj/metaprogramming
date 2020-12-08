@@ -36,15 +36,15 @@ def main():
     renames = Renamer()
     renames.find_declarations(code_tree, args)
     renames.build_references(code_tree, args)
+    renames.rename(code_tree, args)
+    # for dec in renames.declarations:
+    #     dec.rename(dec.identifier_token.text.upper())
 
-    for dec in renames.declarations:
-        dec.rename(dec.identifier_token.text.upper())
-
-    s = ""
-    for f, c in code_tree.items():
-        for t in c:
-            s += t.text
-    print(s)
+    # s = ""
+    # for f, c in code_tree.items():
+    #     for t in c:
+    #         s += t.text
+    #print(s)
 
 
 def file_args_handler(args):

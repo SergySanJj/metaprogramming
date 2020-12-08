@@ -12,6 +12,7 @@ class IdentifierType(Enum):
     EXPORTS = 4
     CLASS_VARIABLE = 5
     CLASS_METHOD = 6
+    TRUE_CONST = 7
 
 
 VARIABLE_KEYWORDS = ["var", "let"]
@@ -120,7 +121,6 @@ class Renamer:
                             continue
 
                     elif scopes[len(scopes) - 1].state in [Scopes.METHOD, Scopes.CLASS_METHOD, Scopes.GLOBAL]:
-
                         if scopes[len(scopes) - 1].state not in [Scopes.GLOBAL]:
                             # check on function
                             start_pos = self.next_t(i, k, text_not_in=["(", ";", ".", "{"])
@@ -155,8 +155,6 @@ class Renamer:
                                         i = start_pos
                                         continue
 
-
-
                         # check on variable
                         search_p = self.prev_t(i, k, text_not_in=["let", "const", "var"],
                                                token_type_not_in=[TokenType.SKIP, TokenType.IDENTIFIER])
@@ -167,8 +165,21 @@ class Renamer:
                             i += 1
                         elif search_p >= 0 and k[search_p].text in CONST_KEYWORDS:
                             variable_scope = scopes[len(scopes) - 1]
-                            self.declarations.append(Declaration(f, k[i], IdentifierType.CONST, variable_scope))
-                            i += 1
+
+                            const_val = self.next_t(i, k,
+                                                    token_type_not_in=[TokenType.NUMBER, TokenType.MULTILINE_STRING,
+                                                                       TokenType.SINGLE_LINE_STRING, TokenType.KEYWORD,
+                                                                       TokenType.IDENTIFIER, TokenType.BOOL])
+                            if const_val < len(k) and k[const_val].token_type in [TokenType.NUMBER,
+                                                                                  TokenType.MULTILINE_STRING,
+                                                                                  TokenType.SINGLE_LINE_STRING,
+                                                                                  TokenType.BOOL]:
+                                self.declarations.append(
+                                    Declaration(f, k[i], IdentifierType.TRUE_CONST, variable_scope))
+                                i += 1
+                            else:
+                                self.declarations.append(Declaration(f, k[i], IdentifierType.CONST, variable_scope))
+                                i += 1
 
                         if search_p >= 0 and k[search_p].text in ["let", "var", "const"]:
                             dict_search = self.next_t(search_p, k, text_not_in=["{", ";"],
@@ -176,9 +187,6 @@ class Renamer:
                             if dict_search < len(k) and k[dict_search].text == "{":
                                 dict_scope = Scope(i, "}", Scopes.DICT)
                                 scopes.append(dict_scope)
-
-
-
 
                 elif t == TokenType.KEYWORD and cur_t.text == "class":
                     class_scope = Scope(i, "}", Scopes.CLASS)
@@ -300,8 +308,21 @@ class Renamer:
             i = 0
             while i < len(k):
                 cur_t = k[i]
-                if (cur_t.token_type == TokenType.IDENTIFIER):
+                if cur_t.token_type == TokenType.IDENTIFIER:
                     if self.has_declaration(cur_t, f, i):
                         dec = self.get_declaration(cur_t, f, i)
                         dec.add_reference(cur_t)
                 i += 1
+
+    def rename(self, code_tree: Dict[str, List[Token]], args):
+        for dec in self.declarations:
+            if dec.identifier_type in [IdentifierType.CLASS]:
+                print(dec, "     use CamelCaseFromBig")
+            elif dec.identifier_type in [
+                IdentifierType.FUNCTION, IdentifierType.CLASS_METHOD,
+                IdentifierType.CLASS_VARIABLE, IdentifierType.VARIABLE,
+                IdentifierType.EXPORTS, IdentifierType.CONST
+            ]:
+                print(dec, "     use camelCaseFromSmall")
+            elif dec.identifier_type in [IdentifierType.TRUE_CONST]:
+                print(dec, "     use CONSTANT_SNAKE")

@@ -14,6 +14,7 @@ class TokenType(Enum):
     IDENTIFIER = 7
     KEYWORD = 8
     NUMBER = 9
+    BOOL = 10
 
 
 class Token:
@@ -49,6 +50,7 @@ is_whitespace = re.compile(r"\s+")
 is_token_start = re.compile(r"[a-zA-Z_\$]")
 is_token_inside = re.compile(r"[a-zA-Z_0-9\$]*")
 is_number = re.compile(r"[0-9\.]*")
+is_bool = re.compile(r"(true|false)")
 
 
 def count_newlines(s, pos):
@@ -116,6 +118,14 @@ def lex_file(content: str, args) -> List[Token]:
             tokens.append(Token(s[pos], TokenType.NEWLINE, count_newlines(s, pos)))
             pos += 1
             continue
+        elif s[pos:pos+4] == "true":
+            tokens.append(Token("true", TokenType.BOOL, count_newlines(s, pos)))
+            pos += len("true")
+            continue
+        elif s[pos:pos+5] == "false":
+            tokens.append(Token("false", TokenType.BOOL, count_newlines(s, pos)))
+            pos += len("false")
+            continue
         elif is_whitespace.fullmatch(s[pos]):
             tokens.append(Token(s[pos], TokenType.WHITESPACE, count_newlines(s, pos)))
             pos += 1
@@ -132,14 +142,16 @@ def lex_file(content: str, args) -> List[Token]:
                 tokens.append(Token(buff, TokenType.IDENTIFIER, count_newlines(s, pos)))
             buff = ""
             continue
-        elif is_number.fullmatch(s[pos:pos+2]):
+        elif pos+1 < len(s) and is_number.fullmatch(s[pos:pos+2]):
             buff += s[pos]
             pos += 1
             while pos < len(s) and is_number.fullmatch(s[pos]):
                 buff += s[pos]
                 pos += 1
             tokens.append(Token(buff, TokenType.NUMBER, count_newlines(s, pos)))
-            print(buff)
+            buff = ""
+            continue
+
         else:
             tokens.append(Token(s[pos], TokenType.SKIP, count_newlines(s, pos)))
             pos += 1
