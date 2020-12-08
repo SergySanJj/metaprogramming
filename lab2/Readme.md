@@ -4,7 +4,7 @@ Renaming and documenting tool for JavaScript
 
 # Installation
 
-    pip install jsccf==0.7.0
+    pip install jsccf==0.8.0
     
 
 # Commands help
@@ -37,3 +37,4 @@ Renaming and documenting tool for JavaScript
 - Renaming class methods
 - Renaming constants
 - Renaming variables
+- Renaming files
