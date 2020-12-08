@@ -128,8 +128,25 @@ class Renamer:
                                                                      scopes[len(scopes) - 2]))
                                 func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
                                 scopes.append(func_args)
-
+                                i = start_pos + 1
                                 continue
+                        elif start_pos < len(k) and k[start_pos].text == "function":
+                            start_pos = self.next_t(start_pos, k, text_not_in=["(", ";", ".", ",", "{"],
+                                                token_type_not_in=[TokenType.IDENTIFIER, TokenType.KEYWORD])
+                            if start_pos < len(k) and k[start_pos].text == "(":
+                                has_func_body = self.next_t(start_pos, k, text_not_in=["{", ".", ",", ";", "("],
+                                                            token_type_not_in=[TokenType.KEYWORD])
+
+                                if has_func_body < len(k) and k[has_func_body].text == "{":
+                                    function_scope = Scope(has_func_body, "}", Scopes.CLASS_METHOD)
+                                    scopes.append(function_scope)
+
+                                    self.declarations.append(Declaration(f, k[i], IdentifierType.CLASS_METHOD,
+                                                                         scopes[len(scopes) - 2]))
+                                    func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
+                                    scopes.append(func_args)
+                                    i = start_pos + 1
+                                    continue
 
                         # check on class variable
                         start_pos = self.next_t(i, k, text_not_in=["=", ";", "."])
@@ -155,7 +172,7 @@ class Renamer:
                                                                          scopes[len(scopes) - 1]))
                                     func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
                                     scopes.append(func_args)
-                                    i = start_pos
+                                    i = start_pos+1
                                     continue
                         else:
                             # check on function
@@ -222,7 +239,7 @@ class Renamer:
                         class_scope.start = i
                     i += 1
                     continue
-                elif t == TokenType.KEYWORD and cur_t.text == "function":
+                elif t == TokenType.KEYWORD and cur_t.text == "function" and scopes[len(scopes)-1].state != Scopes.CLASS:
                     # function f(){}
                     f_name = self.next_t(i, k, text_not_in=["(", "{"], token_type_not_in=[TokenType.IDENTIFIER])
                     if f_name < len(k) and k[f_name].token_type == TokenType.IDENTIFIER:
