@@ -37,6 +37,3 @@ Renaming and documenting tool for JavaScript
 - Renaming class methods
 - Renaming constants
 - Renaming variables
-
-
-- Documentation basics generation for classes, files, functions and class methods

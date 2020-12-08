@@ -1,4 +1,4 @@
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 import glob
 import logging
@@ -22,28 +22,37 @@ def main():
     ap.add_argument('--out-log', type=str, default='.', help="Output log files path")
 
     ap.add_argument('-v', '--verify', action='store_true', help="Use verification <no-args>")
-    ap.add_argument('-fix', action='store_true', help="Fix and save result files output <no-args>")
+    ap.add_argument('-fix', '--fix', action='store_true', help="Fix and save result files output <no-args>")
 
     args = ap.parse_args()
-    # print(args)
+    logging.info(args)
 
     os.makedirs(args.out_log, exist_ok=True)
-    # TODO: add file versions
-    logger.addHandler(logging.FileHandler(os.path.join(args.out_log, 'verification.log'), 'w'))
 
     files = file_args_handler(args)
+    logging.info(f"Analysing {len(files)} files..")
     code_tree = analyse(files, args)
+    logging.info(f"Generated code tree")
 
     renames = Renamer()
+    logging.info(f"Searching declarations..")
     renames.find_declarations(code_tree, args)
+    logging.info(f"Found declarations")
+    logging.info(f"Searching references..")
     renames.build_references(code_tree, args)
+    logging.info(f"Found references")
+    logging.info(f"Finding errors..")
     errors, changes = renames.rename(code_tree, args)
+    logging.info(f"Found {len(errors)} errors")
 
     if args.verify:
-        for e in errors:
-            logging.error(e)
+        logging.info(f"Writing log..")
+        with open(os.path.join(args.out_log, 'verification.log'), 'w') as file:
+            for e in errors:
+                file.write(e.__str__() + "\n")
 
     if args.fix:
+        logging.info(f"Applying changes..")
         with open(os.path.join(args.out_log, 'fixing.log'), 'w') as file:
             for c in changes:
                 file.write(c.__str__() + "\n")
@@ -54,6 +63,8 @@ def main():
                 s += t.text
             with open(f, 'w') as file:
                 file.write(s)
+
+    logging.info(f"Complete!")
 
 
 def file_args_handler(args):

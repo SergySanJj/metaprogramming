@@ -1,4 +1,5 @@
 import logging
+import os
 from enum import Enum
 from typing import List, Tuple, Dict
 
@@ -224,7 +225,7 @@ class Renamer:
                                 function_scope = Scope(f_body, "}", Scopes.METHOD)
                                 func_args = Scope(f_args, ")", Scopes.ARGUMENTS)
                                 self.declarations.append(Declaration(f, k[f_name], IdentifierType.FUNCTION,
-                                                                     scopes[len(scopes) - 1]))
+                                                                     scopes[len(scopes) - 2]))
 
                                 scopes.append(function_scope)
                                 scopes.append(func_args)
@@ -240,7 +241,7 @@ class Renamer:
                                 function_scope = Scope(f_body, "}", Scopes.METHOD)
                                 func_args = Scope(f_args, ")", Scopes.ARGUMENTS)
                                 self.declarations.append(Declaration(f, k[f_name], IdentifierType.FUNCTION,
-                                                                     scopes[len(scopes) - 1]))
+                                                                     scopes[len(scopes) - 2]))
 
                                 scopes.append(function_scope)
                                 scopes.append(func_args)
@@ -355,11 +356,11 @@ class Renamer:
 
             if s != res:
                 for reference in dec.references:
-                    error_messages.append(Message(dec.file, reference.line_number, error_description))
+                    error_messages.append(Message(os.path.abspath(dec.file), reference.line_number, error_description))
                 if args.fix:
                     change_description = f"Changing '{s}' symbol to '{res}'"
                     for reference in dec.references:
-                        rename_messages.append(Message(dec.file, reference.line_number, change_description))
+                        rename_messages.append(Message(os.path.abspath(dec.file), reference.line_number, change_description))
                     dec.rename(res)
         return error_messages, rename_messages
 
@@ -370,9 +371,14 @@ class Renamer:
             res += p.lower().capitalize()
 
         if first_upper:
-            return res[0].upper() + res[1:]
+            return res.capitalize()
         else:
-            return res[0].lower() + res[1:]
+            if len(res) > 1:
+                return res[0].lower() + res[1:]
+            elif len(res) == 1:
+                return res[0].lower()
+            else:
+                return res
 
     def to_true_constant(self, s: str) -> str:
         words = self.split_to_words(s)

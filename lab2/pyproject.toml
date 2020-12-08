@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "jsccf"
-version = "0.6.0"
+version = "0.7.0"
 description = "Renaming and documenting tool for JavaScript"
 authors = ["Sergei <isara.isara8@gmail.com>"]
 
