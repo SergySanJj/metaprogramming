@@ -142,7 +142,7 @@ def lex_file(content: str, args) -> List[Token]:
                 tokens.append(Token(buff, TokenType.IDENTIFIER, count_newlines(s, pos)))
             buff = ""
             continue
-        elif pos+1 < len(s) and is_number.fullmatch(s[pos:pos+2]):
+        elif pos+1 < len(s) and is_number.match(s[pos:pos+2]):
             buff += s[pos]
             pos += 1
             while pos < len(s) and is_number.fullmatch(s[pos]):
