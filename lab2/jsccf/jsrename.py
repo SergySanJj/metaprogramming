@@ -317,12 +317,58 @@ class Renamer:
     def rename(self, code_tree: Dict[str, List[Token]], args):
         for dec in self.declarations:
             if dec.identifier_type in [IdentifierType.CLASS]:
-                print(dec, "     use CamelCaseFromBig")
+                s = dec.identifier_token.text
+                res = self.to_camelcase(s, first_upper=True)
+                print(f"Change {s} to {res}")
             elif dec.identifier_type in [
                 IdentifierType.FUNCTION, IdentifierType.CLASS_METHOD,
                 IdentifierType.CLASS_VARIABLE, IdentifierType.VARIABLE,
                 IdentifierType.EXPORTS, IdentifierType.CONST
             ]:
-                print(dec, "     use camelCaseFromSmall")
+                s = dec.identifier_token.text
+                res = self.to_camelcase(s)
+                print(f"Change {s} to {res}")
             elif dec.identifier_type in [IdentifierType.TRUE_CONST]:
-                print(dec, "     use CONSTANT_SNAKE")
+                s = dec.identifier_token.text
+                res = self.to_true_constant(s)
+                print(f"Change {s} to {res}")
+            else:
+                print("UNKNOWN ")
+
+    def to_camelcase(self, s: str, first_upper=False) -> str:
+        res = ""
+        words = self.split_to_words(s)
+        for p in words:
+            tmp = p.lower()
+            tmp = tmp[0].upper() + tmp[1:]
+            res += tmp
+
+        if first_upper:
+            return res[0].upper() + res[1:]
+        else:
+            return res[0].lower() + res[1:]
+
+    def to_true_constant(self, s: str) -> str:
+        words = self.split_to_words(s)
+        res = words[0].upper()
+        for p in words[1:]:
+            tmp = p.upper()
+            res += "_" + tmp
+
+        return res
+
+    def split_to_words(self, s: str):
+        words = []
+        curr_word = ''
+        for curr, last in zip(s, '_' + s[:-1]):
+            if curr.isupper() and last.islower():
+                words.append(curr_word)
+                curr_word = ''
+            elif curr == '_':
+                words.append(curr_word)
+                curr_word = ''
+            if curr != '_':
+                curr_word += curr
+        words.append(curr_word)
+        # print(words)
+        return words
