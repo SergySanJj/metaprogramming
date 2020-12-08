@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from enum import Enum
 from typing import List, Tuple, Dict
 
@@ -132,7 +133,7 @@ class Renamer:
                                 continue
                         elif start_pos < len(k) and k[start_pos].text == "function":
                             start_pos = self.next_t(start_pos, k, text_not_in=["(", ";", ".", ",", "{"],
-                                                token_type_not_in=[TokenType.IDENTIFIER, TokenType.KEYWORD])
+                                                    token_type_not_in=[TokenType.IDENTIFIER, TokenType.KEYWORD])
                             if start_pos < len(k) and k[start_pos].text == "(":
                                 has_func_body = self.next_t(start_pos, k, text_not_in=["{", ".", ",", ";", "("],
                                                             token_type_not_in=[TokenType.KEYWORD])
@@ -172,7 +173,7 @@ class Renamer:
                                                                          scopes[len(scopes) - 1]))
                                     func_args = Scope(start_pos, ")", Scopes.ARGUMENTS)
                                     scopes.append(func_args)
-                                    i = start_pos+1
+                                    i = start_pos + 1
                                     continue
                         else:
                             # check on function
@@ -239,7 +240,8 @@ class Renamer:
                         class_scope.start = i
                     i += 1
                     continue
-                elif t == TokenType.KEYWORD and cur_t.text == "function" and scopes[len(scopes)-1].state != Scopes.CLASS:
+                elif t == TokenType.KEYWORD and cur_t.text == "function" and scopes[
+                    len(scopes) - 1].state != Scopes.CLASS:
                     # function f(){}
                     f_name = self.next_t(i, k, text_not_in=["(", "{"], token_type_not_in=[TokenType.IDENTIFIER])
                     if f_name < len(k) and k[f_name].token_type == TokenType.IDENTIFIER:
@@ -293,7 +295,6 @@ class Renamer:
                     i += 1
                     continue
                 i += 1
-
 
         return self.declarations
 
@@ -435,3 +436,28 @@ class Renamer:
                 curr_word += curr
         words.append(curr_word)
         return words
+
+    def rename_files(self, code_tree: Dict[str, List[Token]], args):
+        errors = []
+        changes = []
+        bef_af = []
+        is_file_char = re.compile(r"[a-zA-Z_0-9_-]")
+
+        for f, k in code_tree.items():
+            f_name = os.path.splitext(os.path.basename(f))[0]
+            res = ""
+            for c in f_name:
+                if not is_file_char.fullmatch(c):
+                    res += "_"
+                else:
+                    res += c.lower()
+            if f_name != res:
+                errors.append(Message(os.path.abspath(f), 0,
+                                      "2.1: File names must be all lowercase and may include underscores (_)"
+                                      " or dashes (-), but no additional punctuation."
+                                      " Follow the convention that your project uses."))
+                changes.append(Message(os.path.abspath(f), 0,
+                                       f"Renaming file '{f}' to '{os.path.dirname(f) + '/' + res + '.js'}'"))
+                bef_af.append((f, os.path.dirname(f) + '/' + res + '.js'))
+
+        return errors, changes, bef_af

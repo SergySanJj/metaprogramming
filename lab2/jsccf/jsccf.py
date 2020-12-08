@@ -38,8 +38,8 @@ def main():
     logging.info(f"Searching declarations..")
     renames.find_declarations(code_tree, args)
 
-    for dec in renames.declarations:
-        print(dec)
+    # for dec in renames.declarations:
+    #     print(dec)
 
     logging.info(f"Found declarations")
     logging.info(f"Searching references..")
@@ -47,18 +47,24 @@ def main():
     logging.info(f"Found references")
     logging.info(f"Finding errors..")
     errors, changes = renames.rename(code_tree, args)
-    logging.info(f"Found {len(errors)} errors")
+    logging.info(f"Found {len(errors)} errors in code")
+    f_err, f_change, f_bef_af = renames.rename_files(code_tree, args)
+    logging.info(f"Found {len(f_err)} errors in file names")
 
     if args.verify:
         logging.info(f"Writing log..")
         with open(os.path.join(args.out_log, 'verification.log'), 'w') as file:
             for e in errors:
                 file.write(e.__str__() + "\n")
+            for e in f_err:
+                file.write(e.__str__() + "\n")
 
     if args.fix:
         logging.info(f"Applying changes..")
         with open(os.path.join(args.out_log, 'fixing.log'), 'w') as file:
             for c in changes:
+                file.write(c.__str__() + "\n")
+            for c in f_change:
                 file.write(c.__str__() + "\n")
 
         for f, c in code_tree.items():
@@ -67,6 +73,10 @@ def main():
                 s += t.text
             with open(f, 'w') as file:
                 file.write(s)
+
+        for c in f_bef_af:
+            # print(f"{c[0]} to {c[1]}")
+            os.rename(c[0], c[1])
 
     logging.info(f"Complete!")
 
