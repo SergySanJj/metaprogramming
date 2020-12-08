@@ -1,3 +1,4 @@
+import logging
 from enum import Enum
 from typing import List, Tuple, Dict
 
@@ -52,7 +53,7 @@ class Declaration:
         self.identifier_token = identifier_token
         self.identifier_type = identifier_type
         self.scope = scope
-        self.references = []
+        self.references: List[Token] = []
 
     def is_reference(self, ref, pos):
         if self.scope.start <= pos <= self.scope.end:
@@ -69,6 +70,16 @@ class Declaration:
 
     def __str__(self):
         return f"{self.file}: {self.identifier_type}:   {self.identifier_token.text}   ({self.scope})"
+
+
+class Message:
+    def __init__(self, file, line, description):
+        self.file = file
+        self.line = line
+        self.description = description
+
+    def __str__(self):
+        return f"{self.file}: ln:{self.line} - {self.description}"
 
 
 class Renamer:
@@ -315,33 +326,48 @@ class Renamer:
                 i += 1
 
     def rename(self, code_tree: Dict[str, List[Token]], args):
+        error_messages = []
+        rename_messages = []
+
         for dec in self.declarations:
+            s = dec.identifier_token.text
+            res = s
+            error_description = ""
             if dec.identifier_type in [IdentifierType.CLASS]:
-                s = dec.identifier_token.text
                 res = self.to_camelcase(s, first_upper=True)
-                print(f"Change {s} to {res}")
+                error_description = \
+                    f"6.2.2: Class, interface, record, and typedef names are written in UpperCamelCase. Got '{s}'"
             elif dec.identifier_type in [
                 IdentifierType.FUNCTION, IdentifierType.CLASS_METHOD,
                 IdentifierType.CLASS_VARIABLE, IdentifierType.VARIABLE,
                 IdentifierType.EXPORTS, IdentifierType.CONST
             ]:
-                s = dec.identifier_token.text
                 res = self.to_camelcase(s)
-                print(f"Change {s} to {res}")
+                error_description = \
+                    f"6.2.3: Method and variable names are written in lowerCamelCase. Got '{s}' "
             elif dec.identifier_type in [IdentifierType.TRUE_CONST]:
-                s = dec.identifier_token.text
                 res = self.to_true_constant(s)
-                print(f"Change {s} to {res}")
+                error_description = \
+                    f"6.2.5: Constant names use CONSTANT_CASE: all uppercase letters, with words separated by " \
+                    f"underscores. Got '{s}' "
             else:
-                print("UNKNOWN ")
+                logging.error(f"UNKNOWN IDENTIFIER: {dec.identifier_type}")
+
+            if s != res:
+                for reference in dec.references:
+                    error_messages.append(Message(dec.file, reference.line_number, error_description))
+                if args.fix:
+                    change_description = f"Changing '{s}' symbol to '{res}'"
+                    for reference in dec.references:
+                        rename_messages.append(Message(dec.file, reference.line_number, change_description))
+                    dec.rename(res)
+        return error_messages, rename_messages
 
     def to_camelcase(self, s: str, first_upper=False) -> str:
         res = ""
         words = self.split_to_words(s)
         for p in words:
-            tmp = p.lower()
-            tmp = tmp[0].upper() + tmp[1:]
-            res += tmp
+            res += p.lower().capitalize()
 
         if first_upper:
             return res[0].upper() + res[1:]
@@ -353,6 +379,8 @@ class Renamer:
         res = words[0].upper()
         for p in words[1:]:
             tmp = p.upper()
+            if tmp == "":
+                continue
             res += "_" + tmp
 
         return res
@@ -370,5 +398,4 @@ class Renamer:
             if curr != '_':
                 curr_word += curr
         words.append(curr_word)
-        # print(words)
         return words

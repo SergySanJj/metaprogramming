@@ -25,10 +25,11 @@ def main():
     ap.add_argument('-fix', action='store_true', help="Fix and save result files output <no-args>")
 
     args = ap.parse_args()
+    # print(args)
 
     os.makedirs(args.out_log, exist_ok=True)
     # TODO: add file versions
-    logger.addHandler(logging.FileHandler(os.path.join(args.out_log, '_verification.log'), 'w'))
+    logger.addHandler(logging.FileHandler(os.path.join(args.out_log, 'verification.log'), 'w'))
 
     files = file_args_handler(args)
     code_tree = analyse(files, args)
@@ -36,15 +37,23 @@ def main():
     renames = Renamer()
     renames.find_declarations(code_tree, args)
     renames.build_references(code_tree, args)
-    renames.rename(code_tree, args)
-    # for dec in renames.declarations:
-    #     dec.rename(dec.identifier_token.text.upper())
+    errors, changes = renames.rename(code_tree, args)
 
-    # s = ""
-    # for f, c in code_tree.items():
-    #     for t in c:
-    #         s += t.text
-    #print(s)
+    if args.verify:
+        for e in errors:
+            logging.error(e)
+
+    if args.fix:
+        with open(os.path.join(args.out_log, 'fixing.log'), 'w') as file:
+            for c in changes:
+                file.write(c.__str__() + "\n")
+
+        for f, c in code_tree.items():
+            s = ""
+            for t in c:
+                s += t.text
+            with open(f, 'w') as file:
+                file.write(s)
 
 
 def file_args_handler(args):
@@ -91,7 +100,7 @@ def analyse(files, args):
     code_tree = {}
     for f in files:
         if f.endswith(".js"):
-            print(f)
+            # print(f)
             with open(f, 'r', encoding='utf-8') as file:
                 file_code = file.read()
             tokens = lex_file(file_code, args)
