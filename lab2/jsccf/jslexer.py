@@ -49,7 +49,7 @@ JS_KEYWORDS = [
 is_whitespace = re.compile(r"\s+")
 is_token_start = re.compile(r"[a-zA-Z_\$]")
 is_token_inside = re.compile(r"[a-zA-Z_0-9\$]*")
-is_number = re.compile(r"[0-9\.]*")
+is_number = re.compile(r"[0-9\.]")
 is_bool = re.compile(r"(true|false)")
 
 
@@ -118,11 +118,11 @@ def lex_file(content: str, args) -> List[Token]:
             tokens.append(Token(s[pos], TokenType.NEWLINE, count_newlines(s, pos)))
             pos += 1
             continue
-        elif s[pos:pos+4] == "true":
+        elif s[pos:pos + 4] == "true":
             tokens.append(Token("true", TokenType.BOOL, count_newlines(s, pos)))
             pos += len("true")
             continue
-        elif s[pos:pos+5] == "false":
+        elif s[pos:pos + 5] == "false":
             tokens.append(Token("false", TokenType.BOOL, count_newlines(s, pos)))
             pos += len("false")
             continue
@@ -142,15 +142,29 @@ def lex_file(content: str, args) -> List[Token]:
                 tokens.append(Token(buff, TokenType.IDENTIFIER, count_newlines(s, pos)))
             buff = ""
             continue
-        elif pos+1 < len(s) and is_number.match(s[pos:pos+2]):
-            buff += s[pos]
-            pos += 1
-            while pos < len(s) and is_number.fullmatch(s[pos]):
+        elif pos < len(s) and is_number.fullmatch(s[pos]):
+            if s[pos] == ".":
+                if pos + 1 < len(s) and is_number.fullmatch(s[pos + 1]):
+                    buff += s[pos]
+                    pos += 1
+                    while pos < len(s) and is_number.fullmatch(s[pos]):
+                        buff += s[pos]
+                        pos += 1
+                    tokens.append(Token(buff, TokenType.NUMBER, count_newlines(s, pos)))
+                    buff = ""
+                    continue
+                else:
+                    tokens.append(Token(s[pos], TokenType.SKIP, count_newlines(s, pos)))
+                    pos += 1
+            else:
                 buff += s[pos]
                 pos += 1
-            tokens.append(Token(buff, TokenType.NUMBER, count_newlines(s, pos)))
-            buff = ""
-            continue
+                while pos < len(s) and is_number.fullmatch(s[pos]):
+                    buff += s[pos]
+                    pos += 1
+                tokens.append(Token(buff, TokenType.NUMBER, count_newlines(s, pos)))
+                buff = ""
+                continue
 
         else:
             tokens.append(Token(s[pos], TokenType.SKIP, count_newlines(s, pos)))

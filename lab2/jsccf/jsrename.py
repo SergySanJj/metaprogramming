@@ -101,6 +101,8 @@ class Renamer:
                 if t == TokenType.WHITESPACE:
                     i += 1
                     continue
+                # if t != TokenType.NEWLINE:
+                #     print(f"'{cur_t.text}'    {t}", "   ", scopes[len(scopes)-1])
 
                 if t == TokenType.IDENTIFIER:
                     if scopes[len(scopes) - 1].state == Scopes.CLASS:
@@ -269,6 +271,8 @@ class Renamer:
                     continue
                 i += 1
 
+        # for dec in self.declarations:
+        #     print(dec)
         return self.declarations
 
     def has_declaration(self, token, token_file, token_pos):
@@ -360,7 +364,8 @@ class Renamer:
                 if args.fix:
                     change_description = f"Changing '{s}' symbol to '{res}'"
                     for reference in dec.references:
-                        rename_messages.append(Message(os.path.abspath(dec.file), reference.line_number, change_description))
+                        rename_messages.append(
+                            Message(os.path.abspath(dec.file), reference.line_number, change_description))
                     dec.rename(res)
         return error_messages, rename_messages
 
@@ -371,7 +376,7 @@ class Renamer:
             res += p.lower().capitalize()
 
         if first_upper:
-            return res.capitalize()
+            return res
         else:
             if len(res) > 1:
                 return res[0].lower() + res[1:]
