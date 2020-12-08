@@ -356,7 +356,7 @@ class Renamer:
                     else:
                         prev_dot = self.prev_t(i, k, text_not_in=[".", ","],
                                                token_type_not_in=[TokenType.KEYWORD, TokenType.IDENTIFIER])
-                        if prev_dot < len(k) and k[prev_dot].text == ".":
+                        if prev_dot >= 0 and k[prev_dot].text == ".":
                             self.declarations.append(Declaration(f, k[i], IdentifierType.VARIABLE, global_scope))
                 i += 1
 
