@@ -105,13 +105,19 @@ class Renamer:
                 #     print(f"'{cur_t.text}'    {t}", "   ", scopes[len(scopes)-1])
 
                 if t == TokenType.IDENTIFIER:
+                    if scopes[len(scopes) - 1].state == Scopes.ARGUMENTS:
+                        self.declarations.append(Declaration(f, k[i], IdentifierType.VARIABLE,
+                                                             scopes[len(scopes) - 2]))
+                        i += 1
+                        continue
+
                     if scopes[len(scopes) - 1].state == Scopes.CLASS:
 
                         # check on class method
-                        start_pos = self.next_t(i, k, text_not_in=["(", ";", ".", "{"],
+                        start_pos = self.next_t(i, k, text_not_in=["(", ";", ".", ",", "{"],
                                                 token_type_not_in=[TokenType.IDENTIFIER, TokenType.KEYWORD])
                         if start_pos < len(k) and k[start_pos].text == "(":
-                            has_func_body = self.next_t(start_pos, k, text_not_in=["{", ".", ";", "("],
+                            has_func_body = self.next_t(start_pos, k, text_not_in=["{", ".", ",", ";", "("],
                                                         token_type_not_in=[TokenType.KEYWORD])
 
                             if has_func_body < len(k) and k[has_func_body].text == "{":
@@ -271,8 +277,7 @@ class Renamer:
                     continue
                 i += 1
 
-        # for dec in self.declarations:
-        #     print(dec)
+
         return self.declarations
 
     def has_declaration(self, token, token_file, token_pos):
@@ -359,6 +364,9 @@ class Renamer:
                 logging.error(f"UNKNOWN IDENTIFIER: {dec.identifier_type}")
 
             if s != res:
+                if dec.identifier_token not in dec.references:
+                    error_messages.append(Message(os.path.abspath(dec.file),
+                                                  dec.identifier_token.line_number, error_description))
                 for reference in dec.references:
                     error_messages.append(Message(os.path.abspath(dec.file), reference.line_number, error_description))
                 if args.fix:

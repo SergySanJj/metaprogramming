@@ -37,6 +37,10 @@ def main():
     renames = Renamer()
     logging.info(f"Searching declarations..")
     renames.find_declarations(code_tree, args)
+
+    for dec in renames.declarations:
+        print(dec)
+
     logging.info(f"Found declarations")
     logging.info(f"Searching references..")
     renames.build_references(code_tree, args)
