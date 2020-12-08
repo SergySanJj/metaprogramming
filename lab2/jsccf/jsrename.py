@@ -344,6 +344,8 @@ class Renamer:
 
     def build_references(self, code_tree: Dict[str, List[Token]], args):
         for f, k in code_tree.items():
+            global_scope = Scope(0, "", Scopes.GLOBAL)
+            global_scope.end = len(k)
             i = 0
             while i < len(k):
                 cur_t = k[i]
@@ -351,6 +353,11 @@ class Renamer:
                     if self.has_declaration(cur_t, f, i):
                         dec = self.get_declaration(cur_t, f, i)
                         dec.add_reference(cur_t)
+                    else:
+                        prev_dot = self.prev_t(i, k, text_not_in=[".", ","],
+                                               token_type_not_in=[TokenType.KEYWORD, TokenType.IDENTIFIER])
+                        if prev_dot < len(k) and k[prev_dot].text == ".":
+                            self.declarations.append(Declaration(f, k[i], IdentifierType.VARIABLE, global_scope))
                 i += 1
 
     def rename(self, code_tree: Dict[str, List[Token]], args):
