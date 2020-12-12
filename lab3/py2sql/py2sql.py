@@ -1,25 +1,79 @@
+import os
+import sqlite3
+from typing import List
+import logging
+
+
 class Py2SQL:
 
     def __init__(self):
-        pass
+        self.__connection: sqlite3.Connection = None
 
-    def db_connect(self, **db):
-        pass
+    @property
+    def cursor(self) -> sqlite3.dbapi2.Cursor:
+        return self.__connection.cursor()
 
-    def db_disconnect(self):
-        pass
+    def db_connect(self, db_name=":memory:") -> None:
+        """
+        Connect to the sqlite3 database stored in file with db_name name.
+        If db_name was not set - create in memory DB.
+        :param db_name:
+        :return:
+        """
+        try:
+            self.__connection = sqlite3.connect(db_name)
+        except sqlite3.Error:
+            logging.exception(Exception)
 
-    def db_engine(self):
-        pass
+    def db_disconnect(self) -> None:
+        """
+        Disconnect from currently connected database
+        :return:
+        """
+        if self.__connection:
+            self.__connection.close()
+        else:
+            logging.exception("Database was not connected")
 
-    def db_name(self):
-        pass
+    def db_engine(self) -> str:
+        """
+        Get used db engine name and version
+        :return:
+        """
+        return f"SQLite3 {sqlite3.sqlite_version}"
 
-    def db_tables(self):
-        pass
+    def db_name(self, get_paths=False) -> List[str]:
+        """
+        get_paths=True
+            Get list of current databases file names
+        get_paths=False
+            Get list of current databases file paths
 
-    def db_size(self):
-        pass
+        :param get_paths:
+        :return:
+        """
+        cursor = self.cursor
+        cursor.execute("PRAGMA database_list;")
+        curr_table = cursor.fetchall()
+        curr_table = [x[2] for x in curr_table]
+        if not get_paths:
+            curr_table = [os.path.basename(x) for x in curr_table]
+        return curr_table
+
+    def db_tables(self) -> List[str]:
+        """Get list of all table names available in the connected database"""
+        cursor = self.cursor
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        return flatten_structure(cursor.fetchall())
+
+    def db_size(self) -> int:
+        """Get size of the connected database in Mb"""
+        cursor = self.cursor
+        cursor.execute("PRAGMA page_count;")
+        page_count = cursor.fetchall()
+        cursor.execute("PRAGMA page_size")
+        page_size = cursor.fetchall()
+        return flatten_structure(page_count)[0] * flatten_structure(page_size)[0]
 
     def db_table_structure(self, table):
         pass
@@ -46,3 +100,7 @@ class Py2SQL:
 
     def delete_hierarchy(self, root_class):
         pass
+
+
+def flatten_structure(structure):
+    return [i for level in structure for i in level]
