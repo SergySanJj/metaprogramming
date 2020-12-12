@@ -457,7 +457,9 @@ class Renamer:
                 if not is_file_char.fullmatch(c):
                     res += "_"
                 else:
-                    res += c.lower()
+                    res += c
+
+            res = self.to_true_constant(res).lower()
             if f_name != res:
                 errors.append(Message(os.path.abspath(f), 0,
                                       "2.1: File names must be all lowercase and may include underscores (_)"
