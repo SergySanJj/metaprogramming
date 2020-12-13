@@ -1,18 +1,16 @@
 from abc import ABC, abstractmethod
 
 
-class SQLiteType(ABC):
-    type_ref = "None"
+class DBType(ABC):
+    db_type = None
+    python_type = None
 
-    def __init__(self):
-        self.val = None
-
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def value_to_str(val) -> str:
-        return str(val)
+    def value_to_str(cls, val) -> str:
+        pass
 
-    @staticmethod
+    @classmethod
     @abstractmethod
-    def convert_from_db(val):
-        return val
+    def convert_from_db(cls, val):
+        pass

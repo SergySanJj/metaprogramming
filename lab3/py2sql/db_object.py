@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Type, List
 
-from py2sql.sqlite_types.integer import Integer
+from .sqlite_types import DBInteger
 
 
 class Column:
@@ -31,17 +31,10 @@ class DBObject(ABC):
                 print("No such attribute ", k)
 
     def __str__(self):
-        s = "{"
-        for x in self.__dict__.keys():
-            s += f"{x}: {self.__getattribute__(x)} "
-        return s + "}"
+        return str(self.__dict__)
 
     def columns(self) -> List[str]:
-        r = tuple(set(dir(self.__class__)) - set(dir(DBObject)))
-        return [x for x in r if not callable(getattr(self.__class__, x))]
-
-    def primary_keys(self) -> List[str]:
-        return [x for x in self.columns() if getattr(self.__class__, x).primary_key]
+        return [a for a in dir(self.__class__) if isinstance(getattr(self.__class__, a), Column)]
 
 
 def get_column(obj, col_name: str) -> Column:
@@ -61,11 +54,11 @@ def create_table_query(cls):
         v = ""
         v += c + " "
         column: Column = getattr(cls, c)
-        v += column.col_type.type_ref + " "
+        v += column.col_type.db_type + " "
 
         if column.primary_key:
             v += "PRIMARY KEY "
-            if column.col_type == Integer:
+            if column.col_type == DBInteger:
                 v += "AUTOINCREMENT "
 
         values.append("\n" + v)
@@ -88,14 +81,11 @@ def create_table_query(cls):
 
 def insert_object_query(db_object):
     q = f"INSERT INTO {db_object.__table_name__}"
-    columns = db_object.columns()
-    p_keys = db_object.primary_keys()
-
     params = []
 
-    for c in columns:
-        if c in p_keys:
-            if get_column(db_object, c).col_type != Integer:
+    for c in db_object.columns():
+        if get_column(db_object, c).primary_key:
+            if get_column(db_object, c).col_type != DBInteger:
                 params.append(c)
         else:
             params.append(c)
@@ -111,6 +101,3 @@ def insert_object_query(db_object):
 
     return q + ";"
 
-
-def reference():
-    pass
