@@ -13,9 +13,10 @@ class A(DBObject):
     id = Column(DBInteger, primary_key=True)
 
 
-class R(DBObject):
-    __table_name__ = "r_table"
+class A(DBObject):
+    __table_name__ = "a_table"
     id = Column(DBInteger, primary_key=True)
+    r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
 
 
 class B(DBObject):
@@ -38,6 +39,8 @@ class C(B):
 
     val7 = Column(DBInteger)
 
+    r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
+
 
 a = B(val1=123,
       val2="Robert used text",
@@ -54,6 +57,8 @@ print(create_table_query(B))
 print(insert_object_query(a))
 
 print(create_table_query(C))
-print(db.save_class(B))
-print(B.class_foreign_keys)
-db.save_object(a)
+# print(db.save_class(B))
+print(foreign_keys(B))
+# db.save_object(a)
+
+db.save_hierarchy(B)
