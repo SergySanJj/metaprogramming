@@ -1,7 +1,7 @@
 from py2sqlite import *
 
-from py2sqlite.db_objects import DBObject, Column, ForeignKey
-from py2sqlite.queries import create_table_query, insert_object_query, delete_object_query, delete_table_query
+from py2sqlite import Py2SQL
+from py2sqlite.db_objects import *
 from py2sqlite.db_types import *
 
 db = Py2SQL()
@@ -49,26 +49,20 @@ a = B(val1=123,
       val5={1, 2, 3, 4},
       val6={"key": [1, 2]})
 
-# print(a)
-# print(a.val1)
-#
-# print(B.val1)
-# print(create_table_query(B))
-# print(insert_object_query(a))
-#
-# print(create_table_query(C))
-# print(db.save_class(B))
-# print(B.class_foreign_keys())
-#
-# print(delete_object_query(a))
-# print(delete_table_query(B))
+print(a)
+print(a.val1)
+
+print(B.val1)
+
+print(db.save_class(B))
+print(B.class_foreign_keys())
 
 db.save_hierarchy(B)
 db.save_object(a)
 db.delete_hierarchy(R)
 
 
-# db.delete_object(a)
+db.delete_object(a)
 
 
 class StrPrim(DBObject):
