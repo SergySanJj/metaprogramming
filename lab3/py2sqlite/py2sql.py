@@ -3,10 +3,10 @@ import os
 import sqlite3
 from typing import List, Tuple, Any, Type
 
-from py2sql.db_objects import DBObject, ForeignKey
+from py2sqlite.db_objects import DBObject, ForeignKey
 from .db_types import DBInteger
 from .queries import insert_object_query, create_table_query, find_object_by_pk_query, update_object_by_pk_query, \
-    delete_object_query, delete_table_query
+    modify_table_query, delete_object_query, delete_table_query
 
 
 class Py2SQL:
@@ -134,8 +134,11 @@ class Py2SQL:
         col_info = self.__run_single_query(f"PRAGMA table_info('{db_class.__table_name__}')")
         print(col_info)
         if len(col_info) > 0:
-            # TODO: add check if table exists -> modify it
-            print("NEEDS to modify")
+            # q = modify_table_query(db_class, col_info)
+            # cursor = self.cursor
+            # cursor.executescript(q)
+            # self.__connection.commit()
+            pass
         else:
             q = create_table_query(db_class)
             refs: List[Type[DBObject]] = []

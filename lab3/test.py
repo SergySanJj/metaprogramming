@@ -1,8 +1,8 @@
-from py2sql import *
+from py2sqlite import *
 
-from py2sql.db_objects import DBObject, Column, ForeignKey
-from py2sql.queries import create_table_query, insert_object_query, delete_object_query, delete_table_query
-from py2sql.db_types import *
+from py2sqlite.db_objects import DBObject, Column, ForeignKey
+from py2sqlite.queries import create_table_query, insert_object_query, delete_object_query, delete_table_query
+from py2sqlite.db_types import *
 
 db = Py2SQL()
 db.db_connect("mydatabase.db")
