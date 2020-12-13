@@ -191,25 +191,27 @@ class C(B):
 
 # Even if next 2 lines will be commented out, tables A and R will be saved
 # due to the outgoing references in B
-db.save_class(A) 
+db.save_class(A)
 db.save_class(R)
-
 db.save_hierarchy(B)
 
 r = R(some_field="some string")
+db.save_object(r)
 
-a = A(r_ref=1)
+a = A(r_ref=db.max_id(R, "id"))
+db.save_object(a)
+
 
 b = B(val2="Robert used text",
-      r_ref=1,
-      a_ref=1,
+      r_ref=db.max_id(R, "id"),
+      a_ref=db.max_id(A, "id"),
       val4=[1, 2, 3],
       val5={1, 2, 3, 4},
       val6={"key": [1, 2]})
 
 c = C(val2="Robert used text",
-      r_ref=1,
-      a_ref=1,
+      r_ref=db.max_id(R, "id"),
+      a_ref=db.max_id(A, "id"),
       val4=[1, 2, 3],
       val5={1, 2, 3, 4},
       val6={"key": [1, 2]},
@@ -237,4 +239,7 @@ db.save_class(StrPrim)
 db.save_object(str_pr)
 db.save_object(str_pr)
 db.save_object(str_pr)
+
+
+db.delete_hierarchy(B)
 ```

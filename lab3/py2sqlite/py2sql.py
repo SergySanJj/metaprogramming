@@ -30,6 +30,8 @@ class Py2SQL:
         """
         try:
             self.__connection = sqlite3.connect(db_name)
+            cursor = self.cursor
+            cursor.execute("""PRAGMA foreign_keys = ON""")
         except sqlite3.Error:
             logging.exception("Error connecting to database")
 
@@ -136,10 +138,9 @@ class Py2SQL:
         if len(col_info) > 0:
             q = modify_table_query(db_class, col_info)
             # print(q)
-            # cursor = self.cursor
-            # cursor.executescript(q)
-            # self.__connection.commit()
-            pass
+            cursor = self.cursor
+            cursor.executescript(q)
+            self.__connection.commit()
         else:
             q = create_table_query(db_class)
             refs: List[Type[DBObject]] = []
@@ -148,7 +149,6 @@ class Py2SQL:
             for k in refs:
                 self.save_class(k)
 
-            # print(q)
             self.__run_single_query(q, commit=True)
 
     @staticmethod
@@ -200,6 +200,11 @@ class Py2SQL:
         subclasses = root_class.__subclasses__()
         for s in subclasses:
             self.delete_hierarchy(s)
+
+    def max_id(self, table: Type[DBObject], column_name: str):
+        res = self.__run_single_query_flatten(f"""SELECT max({column_name}) FROM {table.__table_name__};""")[0]
+        # print(res)
+        return res
 
     def __run_single_query(self, query, commit=False) -> List[Any]:
         cursor = self.cursor
