@@ -1,7 +1,9 @@
 import os
 import sqlite3
-from typing import List, Tuple, Any
+from typing import List, Tuple, Any, Type
 import logging
+
+from py2sql.db_object import DBObject
 
 
 class Py2SQL:
@@ -85,7 +87,7 @@ class Py2SQL:
 
     # py -> sql
 
-    def save_object(self, db_object):
+    def save_object(self, db_object: Type[DBObject]):
         pass
 
     def save_class(self, db_class):
@@ -94,7 +96,7 @@ class Py2SQL:
     def save_hierarchy(self, root_class):
         pass
 
-    def delete_object(self, db_object):
+    def delete_object(self, db_object: Type[DBObject]):
         pass
 
     def delete_class(self, db_class):
