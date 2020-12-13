@@ -49,13 +49,8 @@ a = B(val1=123,
       val5={1, 2, 3, 4},
       val6={"key": [1, 2]})
 
-print(a)
-print(a.val1)
+db.save_class(B)
 
-print(B.val1)
-
-print(db.save_class(B))
-print(B.class_foreign_keys())
 
 db.save_hierarchy(B)
 db.save_object(a)
