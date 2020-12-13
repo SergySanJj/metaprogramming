@@ -1,23 +1,23 @@
 # py2sqlite
+ORM for Python 3 and SQLite 
 
 
-## install
+# Installation
 ```
-pip install py2sqlite==0.4.0
+pip install py2sqlite
 ```
 
-To use py2sqlite in your project include this dependencies
+# Documentation 
+
+<a href="/docs/py2sqlite.html">Link</a>
+
+
+# Usage
 ```python
-from py2sqlite import Py2SQL
-from py2sqlite.db_objects import *
-from py2sqlite.db_types import *
+from py2sqlite import *
 ```
 
-## Documentation 
-
-<a href="/docs/py2sqlite.html">Documentation</a>
-
-## Connection
+### Connection
 
 SQLite is file and in-memody database, to connect to certain db use:
 ```python
@@ -29,7 +29,7 @@ db.db_connect("mydatabase.db")
 db.db_disconnect()
 ```
 
-## Database info
+### Database info
 
 Get db engine info
 ```python
@@ -61,7 +61,7 @@ Get estimated size of table
 db.db_table_size()
 ```
 
-## Usage sample
+### Usage example
 
 ```python
 
