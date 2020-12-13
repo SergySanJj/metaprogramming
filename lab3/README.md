@@ -15,6 +15,8 @@ from py2sqlite.db_types import *
 
 ## Documentation 
 
+<a href="/docs/py2sqlite.html">Documentation</a>
+
 ## Connection
 
 SQLite is file and in-memody database, to connect to certain db use:
@@ -60,3 +62,7 @@ db.db_table_size()
 ```
 
 ## Usage sample
+
+```python
+
+```
