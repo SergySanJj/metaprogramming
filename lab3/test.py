@@ -23,12 +23,12 @@ from py2sql.sqlite_types import DBString
 
 class A(DBObject):
     __table_name__ = "a_table"
-    id = Column(Integer, primary_key=True)
+    id = Column(DBInteger, primary_key=True)
 
 
 class R(DBObject):
     __table_name__ = "r_table"
-    id = Column(Integer, primary_key=True)
+    id = Column(DBInteger, primary_key=True)
 
 
 
