@@ -12,6 +12,8 @@ pip install py2sqlite
 
 <a href="docs/py2sqlite.html">Link</a>
 
+# Usage
+
 ### Connection
 
 SQLite is file and in-memody database, to connect to certain db use:
