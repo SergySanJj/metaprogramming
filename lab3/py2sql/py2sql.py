@@ -112,7 +112,7 @@ class Py2SQL:
 
     @staticmethod
     def __traverse_references(root: Type[DBObject], res: List[Any]) -> List[Type[DBObject]]:
-        fk: List[ForeignKey] = foreign_keys(root)
+        fk: List[ForeignKey] = root.class_foreign_keys()
         for k in fk:
             ref = k.ref_table
             if ref not in res:

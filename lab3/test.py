@@ -8,8 +8,8 @@ db = Py2SQL()
 db.db_connect("mydatabase.db")
 
 
-class A(DBObject):
-    __table_name__ = "a_table"
+class R(DBObject):
+    __table_name__ = "r_table"
     id = Column(DBInteger, primary_key=True)
 
 
@@ -58,7 +58,7 @@ print(insert_object_query(a))
 
 print(create_table_query(C))
 # print(db.save_class(B))
-print(foreign_keys(B))
+print(B.class_foreign_keys())
 # db.save_object(a)
 
 db.save_hierarchy(B)
