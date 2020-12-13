@@ -16,7 +16,7 @@ class R(DBObject):
 class A(DBObject):
     __table_name__ = "a_table"
     id = Column(DBInteger, primary_key=True)
-    r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
+    r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id", cascade=True))
 
 
 class B(DBObject):
@@ -49,22 +49,23 @@ a = B(val1=123,
       val5={1, 2, 3, 4},
       val6={"key": [1, 2]})
 
-print(a)
-print(a.val1)
-
-print(B.val1)
-print(create_table_query(B))
-print(insert_object_query(a))
-
-print(create_table_query(C))
-print(db.save_class(B))
-print(B.class_foreign_keys())
-
-print(delete_object_query(a))
-print(delete_table_query(B))
+# print(a)
+# print(a.val1)
+#
+# print(B.val1)
+# print(create_table_query(B))
+# print(insert_object_query(a))
+#
+# print(create_table_query(C))
+# print(db.save_class(B))
+# print(B.class_foreign_keys())
+#
+# print(delete_object_query(a))
+# print(delete_table_query(B))
 
 db.save_hierarchy(B)
 db.save_object(a)
+db.delete_hierarchy(R)
 
 
 # db.delete_object(a)

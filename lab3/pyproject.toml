@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py2sqlite"
-version = "0.2.0"
+version = "0.3.0"
 description = "Python ORM for SQLite database"
 authors = ["Mykyta, Sergei <isara.isara8@gmail.com>"]
 

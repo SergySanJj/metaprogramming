@@ -106,9 +106,10 @@ class Py2SQL:
 
     def save_class(self, db_class: Type[DBObject]):
         col_info = self.__run_single_query(f"PRAGMA table_info('{db_class.__table_name__}')")
-        print(col_info)
+        # print(col_info)
         if len(col_info) > 0:
-            # q = modify_table_query(db_class, col_info)
+            q = modify_table_query(db_class, col_info)
+            print(q)
             # cursor = self.cursor
             # cursor.executescript(q)
             # self.__connection.commit()
@@ -121,7 +122,7 @@ class Py2SQL:
             for k in refs:
                 self.save_class(k)
 
-            print(q)
+            # print(q)
             self.__run_single_query(q, commit=True)
 
     @staticmethod
