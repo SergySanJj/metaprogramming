@@ -71,7 +71,7 @@ class StrPrim(DBObject):
     other_val = Column(DBString)
 
 
-str_pr = StrPrim(str_val="sssss", other_val="sdaddddsadsa")
+str_pr = StrPrim(str_val="sssss", other_val="ab")
 
 db.save_class(StrPrim)
 
