@@ -25,7 +25,7 @@ class Py2SQL:
         try:
             self.__connection = sqlite3.connect(db_name)
         except sqlite3.Error:
-            logging.exception(Exception)
+            logging.exception("Error connecting to database")
 
     def db_disconnect(self) -> None:
         """

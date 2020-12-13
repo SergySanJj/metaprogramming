@@ -4,26 +4,18 @@ from typing import Type, List
 from py2sql.sqlite_types.integer import Integer
 
 
-class ColumnClass:
+class Column:
     def __init__(self, col_type, foreign_key=None, primary_key=False):
         self.col_type = col_type
-        self.foreign_key: ForeignKeyClass = foreign_key
+        self.foreign_key: ForeignKey = foreign_key
         self.primary_key = primary_key
 
 
-def Column(col_type, foreign_key=None, primary_key=False):
-    return ColumnClass(col_type, foreign_key, primary_key)
-
-
-class ForeignKeyClass:
+class ForeignKey:
     def __init__(self, ref_table, ref_column, cascade=False):
         self.ref_table = ref_table
         self.ref_column = ref_column
         self.cascade = cascade
-
-
-def ForeignKey(ref_table, ref_column, cascade=False):
-    return ForeignKeyClass(ref_table, ref_column, cascade)
 
 
 class DBObject(ABC):
@@ -52,7 +44,7 @@ class DBObject(ABC):
         return [x for x in self.columns() if getattr(self.__class__, x).primary_key]
 
 
-def get_column(obj, col_name: str) -> ColumnClass:
+def get_column(obj, col_name: str) -> Column:
     return getattr(obj.__class__, col_name)
 
 
@@ -68,7 +60,7 @@ def create_table_query(cls):
     for c in columns:
         v = ""
         v += c + " "
-        column: ColumnClass = getattr(cls, c)
+        column: Column = getattr(cls, c)
         v += column.col_type.type_ref + " "
 
         if column.primary_key:
@@ -79,7 +71,7 @@ def create_table_query(cls):
         values.append("\n" + v)
 
     for c in columns:
-        column: ColumnClass = getattr(cls, c)
+        column: Column = getattr(cls, c)
         if column.foreign_key:
             v = ""
             v += f"""\nFOREIGN KEY ({c}) REFERENCES {column.foreign_key.ref_table} ({column.foreign_key.ref_column})"""
