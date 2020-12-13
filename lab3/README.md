@@ -65,7 +65,59 @@ Get estimated size of table
 db.db_table_size()
 ```
 
-### 
+### Object operations
+
+To use ORM, data class has to be inherited from DBObject and set ```__table_name__``` argument
+
+```python
+class SampleDataClass(DBObject):
+    __table_name__ = "sample_table_name"
+```
+
+py2sqlite supports next python data types:
+
+int, float, str, list, tuple, dict, set, frozenset, array
+
+They are represented by:
+
+DBInteger, DBFloat, DBString, DBCollection, DBArray, DBDict, DBTuple, DBList, DBSet
+
+```python
+from py2sqlite.db_types import *
+
+class SampleDataClass(DBObject):
+    __table_name__ = "sample_table_name"
+
+    int_var = Column(DBInteger)
+    float_var = Column(DBFloat)
+    str_var = Column(DBString)
+
+    arr_var = Column(DBArray)
+    coll_var = Column(DBCollection)
+    dict_var = Column(DBDict)
+    tuple_var = Column(DBTuple)
+    list_var = Column(DBList)
+    set_var = Column(DBSet)
+    
+```
+
+Column class has additional parameters:
+- foreign_key
+- primary_key
+
+One entity can have only one primary key
+
+```python
+from py2sqlite.db_types import *
+
+class SampleDataClass(DBObject):
+    __table_name__ = "sample_table_name"
+
+    int_var = Column(DBInteger, primary_key=True)
+    float_var = Column(DBFloat)
+    str_var = Column(DBString)
+    
+```
 
 ### Usage example
 
