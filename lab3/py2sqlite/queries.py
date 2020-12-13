@@ -131,7 +131,6 @@ def update_object_by_pk_query(db_object: DBObject) -> str:
     return q + ";"
 
 
-
 def form_statement(db_object: DBObject, columns: List[Column], statement="WHERE") -> str:
     """
     Generate a statement

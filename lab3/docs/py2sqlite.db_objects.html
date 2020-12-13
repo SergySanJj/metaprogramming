@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module py2sqlite.db_objects</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="py2sqlite.html"><font color="#ffffff">py2sqlite</font></a>.db_objects</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:f%3A%5Cuniversity%5Cmp%5Cmetaprogramming%5Clab3%5Cpy2sqlite%5Cdb_objects.py">f:\university\mp\metaprogramming\lab3\py2sqlite\db_objects.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="abc.html#ABC">abc.ABC</a>(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="py2sqlite.db_objects.html#DBObject">DBObject</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="builtins.html#object">builtins.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="py2sqlite.db_objects.html#Column">Column</a>
+</font></dt><dt><font face="helvetica, arial"><a href="py2sqlite.db_objects.html#ForeignKey">ForeignKey</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Column">class <strong>Column</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#Column">Column</a>(col_type:&nbsp;Type[py2sqlite.db_types.db_type.DBType],&nbsp;foreign_key=None,&nbsp;primary_key=False)<br>
+&nbsp;<br>
+Represents&nbsp;a&nbsp;column&nbsp;of&nbsp;a&nbsp;table&nbsp;in&nbsp;<a href="builtins.html#object">object</a>&nbsp;type&nbsp;declaration<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Column-__init__"><strong>__init__</strong></a>(self, col_type: Type[py2sqlite.db_types.db_type.DBType], foreign_key=None, primary_key=False)</dt><dd><tt>:param&nbsp;col_type:&nbsp;type&nbsp;for&nbsp;all&nbsp;values&nbsp;in&nbsp;a&nbsp;column<br>
+:param&nbsp;foreign_key:&nbsp;specify&nbsp;a&nbsp;link<br>
+:param&nbsp;primary_key:&nbsp;whether&nbsp;to&nbsp;use&nbsp;as&nbsp;a&nbsp;primary&nbsp;key</tt></dd></dl>
+
+<dl><dt><a name="Column-__set_name__"><strong>__set_name__</strong></a>(self, owner, name)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DBObject">class <strong>DBObject</strong></a>(<a href="abc.html#ABC">abc.ABC</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#DBObject">DBObject</a>(**kwargs)<br>
+&nbsp;<br>
+Helper&nbsp;class&nbsp;that&nbsp;provides&nbsp;a&nbsp;standard&nbsp;way&nbsp;to&nbsp;create&nbsp;an&nbsp;<a href="abc.html#ABC">ABC</a>&nbsp;using<br>
+inheritance.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="py2sqlite.db_objects.html#DBObject">DBObject</a></dd>
+<dd><a href="abc.html#ABC">abc.ABC</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="DBObject-__init__"><strong>__init__</strong></a>(self, **kwargs)</dt><dd><tt>:param&nbsp;kwargs:&nbsp;dict&nbsp;of&nbsp;exact&nbsp;values&nbsp;for&nbsp;each&nbsp;column</tt></dd></dl>
+
+<dl><dt><a name="DBObject-__str__"><strong>__str__</strong></a>(self)</dt><dd><tt>Return&nbsp;str(self).</tt></dd></dl>
+
+<dl><dt><a name="DBObject-obj_columns"><strong>obj_columns</strong></a>(self) -&gt; List[py2sqlite.db_objects.Column]</dt></dl>
+
+<dl><dt><a name="DBObject-obj_foreign_keys"><strong>obj_foreign_keys</strong></a>(self) -&gt; List[py2sqlite.db_objects.ForeignKey]</dt></dl>
+
+<dl><dt><a name="DBObject-obj_primary_keys"><strong>obj_primary_keys</strong></a>(self) -&gt; List[py2sqlite.db_objects.Column]</dt></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="DBObject-class_columns"><strong>class_columns</strong></a>() -&gt; List[py2sqlite.db_objects.Column]<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt></dl>
+
+<dl><dt><a name="DBObject-class_foreign_keys"><strong>class_foreign_keys</strong></a>() -&gt; List[py2sqlite.db_objects.ForeignKey]<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt></dl>
+
+<dl><dt><a name="DBObject-class_primary_keys"><strong>class_primary_keys</strong></a>() -&gt; List[py2sqlite.db_objects.Column]<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__abstractmethods__</strong> = frozenset()</dl>
+
+<dl><dt><strong>__table_name__</strong> = 'default_table'</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ForeignKey">class <strong>ForeignKey</strong></a>(<a href="builtins.html#object">builtins.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ForeignKey">ForeignKey</a>(ref_table:&nbsp;Type[ForwardRef('<a href="#DBObject">DBObject</a>')],&nbsp;ref_column:&nbsp;str,&nbsp;cascade=False)<br>
+&nbsp;<br>
+Represents&nbsp;a&nbsp;link&nbsp;between&nbsp;two&nbsp;columns&nbsp;of&nbsp;different&nbsp;tables<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="ForeignKey-__init__"><strong>__init__</strong></a>(self, ref_table: Type[ForwardRef('DBObject')], ref_column: str, cascade=False)</dt><dd><tt>:param&nbsp;ref_table:&nbsp;an&nbsp;<a href="builtins.html#object">object</a>&nbsp;with&nbsp;a&nbsp;corresponding&nbsp;table&nbsp;to&nbsp;ling<br>
+:param&nbsp;ref_column:&nbsp;a&nbsp;column&nbsp;to&nbsp;link<br>
+:param&nbsp;cascade:&nbsp;whether&nbsp;to&nbsp;delete&nbsp;if&nbsp;links&nbsp;deletes</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>List</strong> = typing.List<br>
+<strong>Type</strong> = typing.Type</td></tr></table>
+</body></html>

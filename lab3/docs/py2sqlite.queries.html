@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module py2sqlite.queries</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="py2sqlite.html"><font color="#ffffff">py2sqlite</font></a>.queries</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:f%3A%5Cuniversity%5Cmp%5Cmetaprogramming%5Clab3%5Cpy2sqlite%5Cqueries.py">f:\university\mp\metaprogramming\lab3\py2sqlite\queries.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-create_table_query"><strong>create_table_query</strong></a>(cls: Type[py2sqlite.db_objects.DBObject]) -&gt; str</dt><dd><tt>Generate&nbsp;a&nbsp;query&nbsp;for&nbsp;table&nbsp;creation<br>
+&nbsp;<br>
+:param&nbsp;cls:&nbsp;class&nbsp;to&nbsp;create&nbsp;table&nbsp;for<br>
+:return:&nbsp;generated&nbsp;query</tt></dd></dl>
+ <dl><dt><a name="-delete_object_query"><strong>delete_object_query</strong></a>(db_object: py2sqlite.db_objects.DBObject) -&gt; str</dt><dd><tt>Generate&nbsp;a&nbsp;query&nbsp;for&nbsp;deleting&nbsp;an&nbsp;object&nbsp;from&nbsp;database<br>
+&nbsp;<br>
+:param&nbsp;db_object:&nbsp;object&nbsp;to&nbsp;delete<br>
+:return:&nbsp;generated&nbsp;query</tt></dd></dl>
+ <dl><dt><a name="-delete_table_query"><strong>delete_table_query</strong></a>(cls: Type[py2sqlite.db_objects.DBObject]) -&gt; str</dt><dd><tt>Generate&nbsp;a&nbsp;query&nbsp;for&nbsp;deleting&nbsp;a&nbsp;table&nbsp;from&nbsp;database<br>
+&nbsp;<br>
+:param&nbsp;cls:&nbsp;class&nbsp;that&nbsp;denotes&nbsp;table&nbsp;to&nbsp;delete<br>
+:return:&nbsp;generated&nbsp;query</tt></dd></dl>
+ <dl><dt><a name="-find_object_by_pk_query"><strong>find_object_by_pk_query</strong></a>(db_object: py2sqlite.db_objects.DBObject, default_pk=True) -&gt; str</dt><dd><tt>Find&nbsp;an&nbsp;object&nbsp;by&nbsp;primary&nbsp;keys<br>
+&nbsp;<br>
+:param&nbsp;db_object:&nbsp;object&nbsp;with&nbsp;primary&nbsp;keys&nbsp;to&nbsp;use&nbsp;for&nbsp;search<br>
+:param&nbsp;default_pk:&nbsp;whether&nbsp;to&nbsp;use&nbsp;autoincremented&nbsp;integer&nbsp;primary&nbsp;keys&nbsp;for&nbsp;search<br>
+:return:&nbsp;generated&nbsp;query</tt></dd></dl>
+ <dl><dt><a name="-form_statement"><strong>form_statement</strong></a>(db_object: py2sqlite.db_objects.DBObject, columns: List[py2sqlite.db_objects.Column], statement='WHERE') -&gt; str</dt><dd><tt>Generate&nbsp;a&nbsp;statement<br>
+&nbsp;<br>
+:param&nbsp;db_object:&nbsp;object&nbsp;to&nbsp;generate&nbsp;query&nbsp;for<br>
+:param&nbsp;columns:&nbsp;columns&nbsp;to&nbsp;use&nbsp;for&nbsp;generation<br>
+:param&nbsp;statement:&nbsp;statement&nbsp;to&nbsp;generate<br>
+:return:&nbsp;generated&nbsp;query</tt></dd></dl>
+ <dl><dt><a name="-insert_object_query"><strong>insert_object_query</strong></a>(db_object: py2sqlite.db_objects.DBObject) -&gt; str</dt><dd><tt>Generate&nbsp;a&nbsp;query&nbsp;for&nbsp;adding&nbsp;an&nbsp;object&nbsp;to&nbsp;database<br>
+&nbsp;<br>
+:param&nbsp;db_object:&nbsp;object&nbsp;to&nbsp;add<br>
+:return:&nbsp;generated&nbsp;query</tt></dd></dl>
+ <dl><dt><a name="-modify_table_query"><strong>modify_table_query</strong></a>(cls: Type[py2sqlite.db_objects.DBObject], old_col_info)</dt></dl>
+ <dl><dt><a name="-update_object_by_pk_query"><strong>update_object_by_pk_query</strong></a>(db_object: py2sqlite.db_objects.DBObject) -&gt; str</dt><dd><tt>Update&nbsp;an&nbsp;object&nbsp;found&nbsp;by&nbsp;primary&nbsp;keys<br>
+&nbsp;<br>
+:param&nbsp;db_object:&nbsp;object&nbsp;to&nbsp;use&nbsp;for&nbsp;update&nbsp;with&nbsp;primary&nbsp;keys&nbsp;to&nbsp;use&nbsp;for&nbsp;search<br>
+:return:&nbsp;generated&nbsp;query</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>List</strong> = typing.List<br>
+<strong>Type</strong> = typing.Type</td></tr></table>
+</body></html>

@@ -1,0 +1,234 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module py2sqlite.db_types.base_types</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="py2sqlite.html"><font color="#ffffff">py2sqlite</font></a>.<a href="py2sqlite.db_types.html"><font color="#ffffff">db_types</font></a>.base_types</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:f%3A%5Cuniversity%5Cmp%5Cmetaprogramming%5Clab3%5Cpy2sqlite%5Cdb_types%5Cbase_types.py">f:\university\mp\metaprogramming\lab3\py2sqlite\db_types\base_types.py</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="abc.html#ABC">abc.ABC</a>(<a href="builtins.html#object">builtins.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>(<a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>, <a href="abc.html#ABC">abc.ABC</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="py2sqlite.db_types.base_types.html#DBFloat">DBFloat</a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="py2sqlite.db_types.base_types.html#DBInteger">DBInteger</a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="py2sqlite.db_types.base_types.html#DBString">DBString</a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>(<a href="abc.html#ABC">abc.ABC</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>(<a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>, <a href="abc.html#ABC">abc.ABC</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="py2sqlite.db_types.base_types.html#DBFloat">DBFloat</a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="py2sqlite.db_types.base_types.html#DBInteger">DBInteger</a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)
+</font></dt><dt><font face="helvetica, arial"><a href="py2sqlite.db_types.base_types.html#DBString">DBString</a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)
+</font></dt></dl>
+</dd>
+</dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DBBaseType">class <strong>DBBaseType</strong></a>(<a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>, <a href="abc.html#ABC">abc.ABC</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Base&nbsp;class&nbsp;for&nbsp;all&nbsp;objects&nbsp;of&nbsp;basic&nbsp;types<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a></dd>
+<dd><a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a></dd>
+<dd><a href="abc.html#ABC">abc.ABC</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="DBBaseType-convert_from_db"><strong>convert_from_db</strong></a>(val)<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt></dl>
+
+<dl><dt><a name="DBBaseType-value_to_str"><strong>value_to_str</strong></a>(val) -&gt; str<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt><dd><tt>Convert&nbsp;object&nbsp;to&nbsp;string<br>
+:param&nbsp;val:&nbsp;object&nbsp;to&nbsp;convert<br>
+:return:&nbsp;string&nbsp;object&nbsp;representation</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__abstractmethods__</strong> = frozenset()</dl>
+
+<hr>
+Data descriptors inherited from <a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Data and other attributes inherited from <a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>:<br>
+<dl><dt><strong>db_type</strong> = None</dl>
+
+<dl><dt><strong>python_type</strong> = None</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DBFloat">class <strong>DBFloat</strong></a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Base&nbsp;class&nbsp;for&nbsp;all&nbsp;objects&nbsp;of&nbsp;basic&nbsp;types<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="py2sqlite.db_types.base_types.html#DBFloat">DBFloat</a></dd>
+<dd><a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a></dd>
+<dd><a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a></dd>
+<dd><a href="abc.html#ABC">abc.ABC</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__abstractmethods__</strong> = frozenset()</dl>
+
+<dl><dt><strong>db_type</strong> = 'REAL'</dl>
+
+<dl><dt><strong>python_type</strong> = &lt;class 'float'&gt;<dd><tt>Convert&nbsp;a&nbsp;string&nbsp;or&nbsp;number&nbsp;to&nbsp;a&nbsp;floating&nbsp;point&nbsp;number,&nbsp;if&nbsp;possible.</tt></dl>
+
+<hr>
+Class methods inherited from <a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>:<br>
+<dl><dt><a name="DBFloat-convert_from_db"><strong>convert_from_db</strong></a>(val)<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt></dl>
+
+<dl><dt><a name="DBFloat-value_to_str"><strong>value_to_str</strong></a>(val) -&gt; str<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt><dd><tt>Convert&nbsp;object&nbsp;to&nbsp;string<br>
+:param&nbsp;val:&nbsp;object&nbsp;to&nbsp;convert<br>
+:return:&nbsp;string&nbsp;object&nbsp;representation</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DBInteger">class <strong>DBInteger</strong></a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Base&nbsp;class&nbsp;for&nbsp;all&nbsp;objects&nbsp;of&nbsp;basic&nbsp;types<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="py2sqlite.db_types.base_types.html#DBInteger">DBInteger</a></dd>
+<dd><a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a></dd>
+<dd><a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a></dd>
+<dd><a href="abc.html#ABC">abc.ABC</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__abstractmethods__</strong> = frozenset()</dl>
+
+<dl><dt><strong>db_type</strong> = 'INTEGER'</dl>
+
+<dl><dt><strong>python_type</strong> = &lt;class 'int'&gt;<dd><tt>int([x])&nbsp;-&gt;&nbsp;integer<br>
+int(x,&nbsp;base=10)&nbsp;-&gt;&nbsp;integer<br>
+&nbsp;<br>
+Convert&nbsp;a&nbsp;number&nbsp;or&nbsp;string&nbsp;to&nbsp;an&nbsp;integer,&nbsp;or&nbsp;return&nbsp;0&nbsp;if&nbsp;no&nbsp;arguments<br>
+are&nbsp;given.&nbsp;&nbsp;If&nbsp;x&nbsp;is&nbsp;a&nbsp;number,&nbsp;return&nbsp;x.__int__().&nbsp;&nbsp;For&nbsp;floating&nbsp;point<br>
+numbers,&nbsp;this&nbsp;truncates&nbsp;towards&nbsp;zero.<br>
+&nbsp;<br>
+If&nbsp;x&nbsp;is&nbsp;not&nbsp;a&nbsp;number&nbsp;or&nbsp;if&nbsp;base&nbsp;is&nbsp;given,&nbsp;then&nbsp;x&nbsp;must&nbsp;be&nbsp;a&nbsp;string,<br>
+bytes,&nbsp;or&nbsp;bytearray&nbsp;instance&nbsp;representing&nbsp;an&nbsp;integer&nbsp;literal&nbsp;in&nbsp;the<br>
+given&nbsp;base.&nbsp;&nbsp;The&nbsp;literal&nbsp;can&nbsp;be&nbsp;preceded&nbsp;by&nbsp;'+'&nbsp;or&nbsp;'-'&nbsp;and&nbsp;be&nbsp;surrounded<br>
+by&nbsp;whitespace.&nbsp;&nbsp;The&nbsp;base&nbsp;defaults&nbsp;to&nbsp;10.&nbsp;&nbsp;Valid&nbsp;bases&nbsp;are&nbsp;0&nbsp;and&nbsp;2-36.<br>
+Base&nbsp;0&nbsp;means&nbsp;to&nbsp;interpret&nbsp;the&nbsp;base&nbsp;from&nbsp;the&nbsp;string&nbsp;as&nbsp;an&nbsp;integer&nbsp;literal.<br>
+&gt;&gt;&gt;&nbsp;int('0b100',&nbsp;base=0)<br>
+4</tt></dl>
+
+<hr>
+Class methods inherited from <a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>:<br>
+<dl><dt><a name="DBInteger-convert_from_db"><strong>convert_from_db</strong></a>(val)<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt></dl>
+
+<dl><dt><a name="DBInteger-value_to_str"><strong>value_to_str</strong></a>(val) -&gt; str<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt><dd><tt>Convert&nbsp;object&nbsp;to&nbsp;string<br>
+:param&nbsp;val:&nbsp;object&nbsp;to&nbsp;convert<br>
+:return:&nbsp;string&nbsp;object&nbsp;representation</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="DBString">class <strong>DBString</strong></a>(<a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>, <a href="abc.html#ABC">abc.ABC</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Base&nbsp;class&nbsp;for&nbsp;all&nbsp;objects&nbsp;of&nbsp;basic&nbsp;types<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="py2sqlite.db_types.base_types.html#DBString">DBString</a></dd>
+<dd><a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a></dd>
+<dd><a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a></dd>
+<dd><a href="abc.html#ABC">abc.ABC</a></dd>
+<dd><a href="builtins.html#object">builtins.object</a></dd>
+</dl>
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="DBString-value_to_str"><strong>value_to_str</strong></a>(val) -&gt; str<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt><dd><tt>Convert&nbsp;object&nbsp;to&nbsp;string<br>
+:param&nbsp;val:&nbsp;object&nbsp;to&nbsp;convert<br>
+:return:&nbsp;string&nbsp;object&nbsp;representation</tt></dd></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>__abstractmethods__</strong> = frozenset()</dl>
+
+<dl><dt><strong>db_type</strong> = 'TEXT'</dl>
+
+<dl><dt><strong>python_type</strong> = &lt;class 'str'&gt;<dd><tt>str(object='')&nbsp;-&gt;&nbsp;str<br>
+str(bytes_or_buffer[,&nbsp;encoding[,&nbsp;errors]])&nbsp;-&gt;&nbsp;str<br>
+&nbsp;<br>
+Create&nbsp;a&nbsp;new&nbsp;string&nbsp;object&nbsp;from&nbsp;the&nbsp;given&nbsp;object.&nbsp;If&nbsp;encoding&nbsp;or<br>
+errors&nbsp;is&nbsp;specified,&nbsp;then&nbsp;the&nbsp;object&nbsp;must&nbsp;expose&nbsp;a&nbsp;data&nbsp;buffer<br>
+that&nbsp;will&nbsp;be&nbsp;decoded&nbsp;using&nbsp;the&nbsp;given&nbsp;encoding&nbsp;and&nbsp;error&nbsp;handler.<br>
+Otherwise,&nbsp;returns&nbsp;the&nbsp;result&nbsp;of&nbsp;object.<a href="#DBString-__str__">__str__</a>()&nbsp;(if&nbsp;defined)<br>
+or&nbsp;repr(object).<br>
+encoding&nbsp;defaults&nbsp;to&nbsp;sys.getdefaultencoding().<br>
+errors&nbsp;defaults&nbsp;to&nbsp;'strict'.</tt></dl>
+
+<hr>
+Class methods inherited from <a href="py2sqlite.db_types.base_types.html#DBBaseType">DBBaseType</a>:<br>
+<dl><dt><a name="DBString-convert_from_db"><strong>convert_from_db</strong></a>(val)<font color="#909090"><font face="helvetica, arial"> from <a href="abc.html#ABCMeta">abc.ABCMeta</a></font></font></dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="py2sqlite.db_types.db_type.html#DBType">py2sqlite.db_types.db_type.DBType</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>
