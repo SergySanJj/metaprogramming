@@ -54,7 +54,7 @@ def insert_object_query(db_object: DBObject):
 
 
 def find_object_by_pk_query(db_object: DBObject, default_pk=True):
-    q = f"SELECT * FROM {db_object.__table_name__}\n WHERE "
+    q = f"SELECT * FROM {db_object.__table_name__}\n"
     options = []
 
     p_k = db_object.obj_primary_keys()
@@ -64,7 +64,36 @@ def find_object_by_pk_query(db_object: DBObject, default_pk=True):
     for p in p_k:
         s = f"{p.name} = {p.col_type.value_to_str(db_object.__getattribute__(p.name))}"
         options.append(s)
-
-    where = " AND ".join(options)
+    where = ""
+    if len(options) > 0:
+        where = "WHERE " + " AND ".join(options)
     q += where
-    return q
+    return q + ";"
+
+
+def update_object_by_pk_query(db_object: DBObject):
+    q = f"UPDATE {db_object.__table_name__}\n"
+    options = []
+
+    columns = db_object.obj_columns()
+    columns = [x for x in columns if (not (x.col_type == DBInteger and x.primary_key)) and not x.primary_key]
+
+    for c in columns:
+        s = f"{c.name} = {c.col_type.value_to_str(db_object.__getattribute__(c.name))}"
+        options.append(s)
+    set_val = ""
+    if len(options) > 0:
+        set_val = " SET " + " AND ".join(options)
+    q += set_val
+
+    wh = []
+    p_k = db_object.obj_primary_keys()
+    for p in p_k:
+        s = f"{p.name} = {p.col_type.value_to_str(db_object.__getattribute__(p.name))}"
+        wh.append(s)
+    where = ""
+    if len(wh) > 0:
+        where = " WHERE " + " AND ".join(wh)
+    q += where
+
+    return q + ";"

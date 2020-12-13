@@ -68,9 +68,10 @@ class StrPrim(DBObject):
     __table_name__ = "str_table"
 
     str_val = Column(DBString, primary_key=True)
+    other_val = Column(DBString)
 
 
-str_pr = StrPrim(str_val="sssss")
+str_pr = StrPrim(str_val="sssss", other_val="sdaddddsadsa")
 
 db.save_class(StrPrim)
 

@@ -5,7 +5,7 @@ import logging
 
 from py2sql.db_objects import DBObject, ForeignKey
 from .db_types import DBInteger
-from .queries import insert_object_query, create_table_query, find_object_by_pk_query
+from .queries import insert_object_query, create_table_query, find_object_by_pk_query, update_object_by_pk_query
 
 
 class Py2SQL:
@@ -92,14 +92,16 @@ class Py2SQL:
     def save_object(self, db_object: DBObject):
         p_k = db_object.obj_primary_keys()
         p_k = [x for x in p_k if x.col_type != DBInteger]
-        if len(p_k) == 0 or \
-                len(self.__run_single_query_flatten(find_object_by_pk_query(db_object, False))) == 0:
+        if len(p_k) == 0 or len(self._find_by_pk(db_object)) == 0:
             q = insert_object_query(db_object)
             self.__run_single_query(q, commit=True)
         else:
-            logging.exception(f"There is already row with pk: "
-                              f"[{[x.name for x in p_k]}] = [{[db_object.__getattribute__(x.name) for x in p_k]}]"
-                              f" in table {db_object.__table_name__}")
+            q = update_object_by_pk_query(db_object)
+            self.__run_single_query(q, commit=True)
+
+    def _find_by_pk(self, db_object):
+        q = find_object_by_pk_query(db_object, False)
+        return self.__run_single_query_flatten(q)
 
     def save_class(self, db_class: Type[DBObject]):
         col_info = self.__run_single_query(f"PRAGMA table_info('{db_class.__table_name__}')")
