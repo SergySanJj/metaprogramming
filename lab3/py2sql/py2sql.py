@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from typing import List, Tuple
+from typing import List, Tuple, Any
 import logging
 
 
@@ -52,9 +52,7 @@ class Py2SQL:
         :param get_paths:
         :return:
         """
-        cursor = self.cursor
-        cursor.execute("PRAGMA database_list;")
-        curr_table = cursor.fetchall()
+        curr_table = self.__run_single_query("PRAGMA database_list;")
         curr_table = [x[2] for x in curr_table]
         if not get_paths:
             curr_table = [os.path.basename(x) for x in curr_table]
@@ -62,37 +60,28 @@ class Py2SQL:
 
     def db_tables(self) -> List[str]:
         """Get list of all table names available in the connected database"""
-        cursor = self.cursor
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        return flatten_structure(cursor.fetchall())
+        return flatten_structure(self.__run_single_query("SELECT name FROM sqlite_master WHERE type='table';"))
 
     def db_size(self) -> int:
         """Get size of the connected database in Mb"""
-        cursor = self.cursor
-        cursor.execute("PRAGMA page_count;")
-        page_count = cursor.fetchall()
-        cursor.execute("PRAGMA page_size")
-        page_size = cursor.fetchall()
-        return flatten_structure(page_count)[0] * flatten_structure(page_size)[0] / (1024 * 1024)
+        page_count = self.__run_single_query_flatten("PRAGMA page_count;")[0]
+        page_size = self.__run_single_query_flatten("PRAGMA page_size")[0]
+        return page_size * page_count / (1024 * 1024)
 
     def db_table_structure(self, table) -> List[Tuple[int, str, str]]:
         """Get list of tuples with info about table attributes [(id:int, name:str, type:str)]"""
-        cursor = self.cursor
-        cursor.execute(f"PRAGMA table_info('{table}')")
-        res = cursor.fetchall()
+        res = self.__run_single_query(f"PRAGMA table_info('{table}')")
         return [(int(x[0]), str(x[1]), str(x[2])) for x in res]
 
     def db_table_size(self, table):
         """Get estimated size of the table in Mb"""
-        cursor = self.cursor
-        cursor.execute(f"""
-        SELECT COUNT(*) *  -- The number of rows in the table
-         ( 24 +        -- The length of all 4 byte int columns
-           12 +        -- The length of all 8 byte int columns
-           128 )       -- The estimate of the average length of all string columns
-        FROM {table}
-        """)
-        return flatten_structure(cursor.fetchall())[0] / (1024 * 1024)
+        return self.__run_single_query_flatten(f"""
+            SELECT COUNT(*) *  -- The number of rows in the table
+             ( 24 +        -- The length of all 4 byte int columns
+               12 +        -- The length of all 8 byte int columns
+               128 )       -- The estimate of the average length of all string columns
+            FROM {table}
+            """)[0] / (1024 * 1024)
 
     # py -> sql
 
@@ -114,6 +103,14 @@ class Py2SQL:
     def delete_hierarchy(self, root_class):
         pass
 
+    def __run_single_query(self, query) -> List[Any]:
+        cursor = self.cursor
+        cursor.execute(query)
+        return cursor.fetchall()
 
-def flatten_structure(structure):
+    def __run_single_query_flatten(self, query) -> List[Any]:
+        return flatten_structure(self.__run_single_query(query))
+
+
+def flatten_structure(structure) -> List[Any]:
     return [i for level in structure for i in level]
