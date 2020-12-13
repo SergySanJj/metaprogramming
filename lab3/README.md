@@ -189,9 +189,11 @@ class C(B):
     val7 = Column(DBInteger)
     r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
 
-
-db.save_class(A)
+# Even if next 2 lines will be commented out, tables A and R will be saved
+# due to the outgoing references in B
+db.save_class(A) 
 db.save_class(R)
+
 db.save_hierarchy(B)
 
 r = R(some_field="some string")

@@ -43,8 +43,8 @@ class C(B):
     r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
 
 
-db.save_class(A)
-db.save_class(R)
+# db.save_class(A)
+# db.save_class(R)
 db.save_hierarchy(B)
 
 r = R(some_field="some string")
