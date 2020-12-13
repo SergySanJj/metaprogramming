@@ -5,6 +5,13 @@ from .db_types import DBInteger
 
 
 def create_table_query(cls: Type[DBObject]) -> str:
+    """
+    Generate a query for table creation
+
+    :param cls: class to create table for
+    :return: generated query
+    """
+
     values = []
     references = []
     for c in cls.class_columns():
@@ -31,6 +38,13 @@ def create_table_query(cls: Type[DBObject]) -> str:
 
 
 def insert_object_query(db_object: DBObject) -> str:
+    """
+    Generate a query for adding an object to database
+
+    :param db_object: object to add
+    :return: generated query
+    """
+
     q = f"INSERT INTO {db_object.__table_name__}"
 
     params, vals = [], []
@@ -54,6 +68,13 @@ def insert_object_query(db_object: DBObject) -> str:
 
 
 def delete_object_query(db_object: DBObject) -> str:
+    """
+    Generate a query for deleting an object from database
+
+    :param db_object: object to delete
+    :return: generated query
+    """
+
     q = f"DELETE FROM {db_object.__table_name__}\n"
     cols = [c for c in db_object.obj_columns() if not (c.primary_key and c.col_type == DBInteger)]
     q += form_statement(db_object, cols)
@@ -61,11 +82,26 @@ def delete_object_query(db_object: DBObject) -> str:
 
 
 def delete_table_query(cls: Type[DBObject]) -> str:
+    """
+    Generate a query for deleting a table from database
+
+    :param cls: class that denotes table to delete
+    :return: generated query
+    """
+
     q = f"DROP TABLE IF EXISTS {cls.__table_name__};"
     return q
 
 
 def find_object_by_pk_query(db_object: DBObject, default_pk=True) -> str:
+    """
+    Find an object by primary keys
+
+    :param db_object: object with primary keys to use for search
+    :param default_pk: whether to use autoincremented integer primary keys for search
+    :return: generated query
+    """
+
     q = f"SELECT * FROM {db_object.__table_name__}\n"
 
     p_k = db_object.obj_primary_keys()
@@ -77,6 +113,13 @@ def find_object_by_pk_query(db_object: DBObject, default_pk=True) -> str:
 
 
 def update_object_by_pk_query(db_object: DBObject) -> str:
+    """
+    Update an object found by primary keys
+
+    :param db_object: object to use for update with primary keys to use for search
+    :return: generated query
+    """
+
     q = f"UPDATE {db_object.__table_name__}\n"
 
     columns = db_object.obj_columns()
@@ -89,6 +132,15 @@ def update_object_by_pk_query(db_object: DBObject) -> str:
 
 
 def form_statement(db_object: DBObject, columns: List[Column], statement="WHERE") -> str:
+    """
+    Generate a statement
+
+    :param db_object: object to generate query for
+    :param columns: columns to use for generation
+    :param statement: statement to generate
+    :return: generated query
+    """
+
     options = []
     for p in columns:
         s = f"{p.name} = {p.col_type.value_to_str(getattr(db_object, p.name))}"
