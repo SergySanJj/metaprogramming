@@ -87,10 +87,12 @@ class Py2SQL:
 
     # py -> sql
 
-    def save_object(self, db_object: Type[DBObject]):
+    def save_object(self, db_object):
         # TODO: add check on primary keys already exist
         q = insert_object_query(db_object)
-        self.__run_single_query(q)
+        cursor = self.cursor
+        cursor.execute(q)
+        self.__connection.commit()
 
     def save_class(self, db_class: Type[DBObject]):
         # TODO: add check if table exists -> modify it

@@ -29,3 +29,8 @@ class DBInteger(DBBaseType, ABC):
 class DBString(DBBaseType, ABC):
     db_type = "TEXT"
     python_type = str
+
+    @classmethod
+    @typecheck
+    def value_to_str(cls, val) -> str:
+        return "'" + str(val) + "'"
