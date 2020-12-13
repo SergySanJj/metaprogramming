@@ -1,10 +1,10 @@
-from typing import Type
+from typing import Type, List
 
-from .db_objects import DBObject
+from .db_objects import DBObject, Column
 from .db_types import DBInteger
 
 
-def create_table_query(cls: Type[DBObject]):
+def create_table_query(cls: Type[DBObject]) -> str:
     values = []
     references = []
     for c in cls.class_columns():
@@ -30,7 +30,7 @@ def create_table_query(cls: Type[DBObject]):
     return q
 
 
-def insert_object_query(db_object: DBObject):
+def insert_object_query(db_object: DBObject) -> str:
     q = f"INSERT INTO {db_object.__table_name__}"
 
     params, vals = [], []
@@ -53,7 +53,19 @@ def insert_object_query(db_object: DBObject):
     return q + ";"
 
 
-def find_object_by_pk_query(db_object: DBObject, default_pk=True):
+def delete_object_query(db_object: DBObject) -> str:
+    q = f"DELETE FROM {db_object.__table_name__}\n"
+    cols = [c for c in db_object.obj_columns() if not (c.primary_key and c.col_type == DBInteger)]
+    q += form_statement(db_object, cols)
+    return q + ";"
+
+
+def delete_table_query(cls: Type[DBObject]) -> str:
+    q = f"DROP TABLE IF EXISTS {cls.__table_name__};"
+    return q
+
+
+def find_object_by_pk_query(db_object: DBObject, default_pk=True) -> str:
     q = f"SELECT * FROM {db_object.__table_name__}\n"
 
     p_k = db_object.obj_primary_keys()
@@ -64,7 +76,7 @@ def find_object_by_pk_query(db_object: DBObject, default_pk=True):
     return q + ";"
 
 
-def update_object_by_pk_query(db_object: DBObject):
+def update_object_by_pk_query(db_object: DBObject) -> str:
     q = f"UPDATE {db_object.__table_name__}\n"
 
     columns = db_object.obj_columns()
@@ -76,10 +88,10 @@ def update_object_by_pk_query(db_object: DBObject):
     return q + ";"
 
 
-def form_statement(db_object, columns, statement="WHERE"):
+def form_statement(db_object: DBObject, columns: List[Column], statement="WHERE") -> str:
     options = []
     for p in columns:
-        s = f"{p.name} = {p.col_type.value_to_str(db_object.__getattribute__(p.name))}"
+        s = f"{p.name} = {p.col_type.value_to_str(getattr(db_object, p.name))}"
         options.append(s)
     where = ""
     if len(options) > 0:

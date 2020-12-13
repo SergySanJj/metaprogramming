@@ -16,7 +16,7 @@ class Column:
 
 
 class ForeignKey:
-    def __init__(self, ref_table: Type["DBObject"], ref_column, cascade=False):
+    def __init__(self, ref_table: Type["DBObject"], ref_column: str, cascade=False):
         self.ref_table = ref_table
         self.ref_column = ref_column
         self.cascade = cascade
