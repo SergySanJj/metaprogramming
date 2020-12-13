@@ -1,9 +1,19 @@
 from functools import wraps
+from typing import Type
+
+from .db_type import DBType
 
 
 def typecheck(f):
+    """
+    Add type checking for a single argument class function
+
+    :param f: function to decorate
+    :return: decorated function
+    """
+
     @wraps(f)
-    def g(cls, val):
+    def g(cls: Type[DBType], val):
         if cls.python_type is None:
             raise Exception('python_type not specified')
         if not isinstance(val, cls.python_type):

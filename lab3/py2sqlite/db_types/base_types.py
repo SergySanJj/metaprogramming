@@ -5,6 +5,10 @@ from .utils import typecheck
 
 
 class DBBaseType(DBType, ABC):
+    """
+    Base class for all objects of basic types
+    """
+
     @classmethod
     @typecheck
     def value_to_str(cls, val) -> str:

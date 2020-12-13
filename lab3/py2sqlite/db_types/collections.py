@@ -9,6 +9,10 @@ from .utils import typecheck
 
 
 class DBCollection(DBType, ABC):
+    """
+    Base class for all collection objects
+    """
+
     db_type = "TEXT"
 
     @classmethod

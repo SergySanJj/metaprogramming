@@ -1,11 +1,21 @@
 from abc import ABC
-from typing import Type, List, Any
+from typing import Type, List
 
 from .db_types import DBType
 
 
 class Column:
+    """
+    Represents a column of a table in object type declaration
+    """
+
     def __init__(self, col_type: Type[DBType], foreign_key=None, primary_key=False):
+        """
+
+        :param col_type: type for all values in a column
+        :param foreign_key: specify a link
+        :param primary_key: whether to use as a primary key
+        """
         self.col_type = col_type
         self.foreign_key: ForeignKey = foreign_key
         self.primary_key = primary_key
@@ -16,7 +26,17 @@ class Column:
 
 
 class ForeignKey:
+    """
+    Represents a link between two columns of different tables
+    """
+
     def __init__(self, ref_table: Type["DBObject"], ref_column: str, cascade=False):
+        """
+
+        :param ref_table: an object with a corresponding table to ling
+        :param ref_column: a column to link
+        :param cascade: whether to delete if links deletes
+        """
         self.ref_table = ref_table
         self.ref_column = ref_column
         self.cascade = cascade
@@ -24,8 +44,15 @@ class ForeignKey:
 
 class DBObject(ABC):
     __table_name__ = "default_table"
+    """
+    Represents an object with a corresponding row in a corresponding table in database
+    """
 
     def __init__(self, **kwargs):
+        """
+
+        :param kwargs: dict of exact values for each column
+        """
         obj_column_names = [c.name for c in self.obj_columns()]
         for k, v in kwargs.items():
             if k in obj_column_names:
