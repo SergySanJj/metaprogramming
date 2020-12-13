@@ -90,9 +90,7 @@ class Py2SQL:
     def save_object(self, db_object):
         # TODO: add check on primary keys already exist
         q = insert_object_query(db_object)
-        cursor = self.cursor
-        cursor.execute(q)
-        self.__connection.commit()
+        self.__run_single_query(q, commit=True)
 
     def save_class(self, db_class: Type[DBObject]):
         # TODO: add check if table exists -> modify it
@@ -121,10 +119,13 @@ class Py2SQL:
     def delete_hierarchy(self, root_class):
         pass
 
-    def __run_single_query(self, query) -> List[Any]:
+    def __run_single_query(self, query, commit=False) -> List[Any]:
         cursor = self.cursor
         cursor.execute(query)
-        return cursor.fetchall()
+        res = cursor.fetchall()
+        if commit:
+            self.__connection.commit()
+        return res
 
     def __run_single_query_flatten(self, query) -> List[Any]:
         return flatten_structure(self.__run_single_query(query))
