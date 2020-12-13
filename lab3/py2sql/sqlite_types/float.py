@@ -1,18 +1,16 @@
-from abc import ABC, abstractmethod
+from . import sqlite_type
 
 
-class SQLiteType(ABC):
-    type_ref = "None"
+class Float(sqlite_type.SQLiteType):
+    type_ref = "REAL"
 
     def __init__(self):
-        self.val = None
+        super().__init__()
 
     @staticmethod
-    @abstractmethod
     def value_to_str(val) -> str:
         return str(val)
 
     @staticmethod
-    @abstractmethod
     def convert_from_db(val):
         return val

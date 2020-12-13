@@ -1,7 +1,10 @@
+import jsonpickle
+
 from . import sqlite_type
+import json
 
 
-class String(sqlite_type.SQLiteType):
+class DBList(sqlite_type.SQLiteType):
     type_ref = "TEXT"
 
     def __init__(self):
@@ -9,8 +12,8 @@ class String(sqlite_type.SQLiteType):
 
     @staticmethod
     def value_to_str(val) -> str:
-        return f"'{str(val)}'"
+        return f"'{json.dumps(jsonpickle.encode(val))}'"
 
     @staticmethod
     def convert_from_db(val):
-        return val
+        return jsonpickle.decode(val)

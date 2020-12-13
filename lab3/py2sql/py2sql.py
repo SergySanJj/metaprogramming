@@ -3,7 +3,7 @@ import sqlite3
 from typing import List, Tuple, Any, Type
 import logging
 
-from py2sql.db_object import DBObject
+from py2sql.db_object import DBObject, insert_object_query, create_table_query
 
 
 class Py2SQL:
@@ -88,10 +88,14 @@ class Py2SQL:
     # py -> sql
 
     def save_object(self, db_object: Type[DBObject]):
-        pass
+        # TODO: add check on primary keys already exist
+        q = insert_object_query(db_object)
+        self.__run_single_query(q)
 
     def save_class(self, db_class):
-        pass
+        # TODO: add check if table exists -> modify it
+        q = create_table_query(db_class)
+        self.__run_single_query(q)
 
     def save_hierarchy(self, root_class):
         pass

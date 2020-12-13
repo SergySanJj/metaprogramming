@@ -10,3 +10,7 @@ class Integer(sqlite_type.SQLiteType):
     @staticmethod
     def value_to_str(val) -> str:
         return str(val)
+
+    @staticmethod
+    def convert_from_db(val):
+        return val
