@@ -157,21 +157,11 @@ def modify_table_query(cls: Type[DBObject], old_col_info):
     # Drop columns
 
     # Modify columns
+    q += "PRAGMA foreign_keys=off;BEGIN TRANSACTION;\n"
+    q += f"""ALTER TABLE {cls.__table_name__} RENAME TO {cls.__table_name__}_tmp_old;\n"""
+    q += create_table_query(cls)
 
-    q += f"""
-PRAGMA foreign_keys=off;
-BEGIN TRANSACTION;"""
-    q += f"""ALTER TABLE {cls.__table_name__} RENAME TO {cls.__table_name__}_tmp_old;"""
-    q += f"""CREATE TABLE {cls.__table_name__} ("""
-    q += ', '.join([x.name + ' ' + x.col_type.db_type + (
-        (' PRIMARY KEY ' + (' AUTOINCREMENT ' if x.col_type == DBInteger else '')) if x.primary_key else '') for x in
-                    cls.class_columns()])
-    q += ',' if len(cls.class_foreign_keys()) > 0 else ''
-    q += ', '.join(
-        [f"FOREIGN KEY ({c.name}) REFERENCES {c.foreign_key.ref_table.__table_name__} ({c.foreign_key.ref_column})"
-         f" {' ON DELETE CASCADE' if c.foreign_key.cascade else ''}" for c in cls.class_columns() if c.foreign_key])
-    q += f""");
-    INSERT INTO {cls.__table_name__} ({', '.join([x[1] for x in old_col_info if x[1] in [r.name for r in cls.class_columns()]])})"""
+    q += f"""INSERT INTO {cls.__table_name__} ({', '.join([x[1] for x in old_col_info if x[1] in [r.name for r in cls.class_columns()]])})"""
     q += f""" SELECT {', '.join([x[1] for x in old_col_info if x[1] in [r.name for r in cls.class_columns()]])} FROM """
     q += f"""{cls.__table_name__}_tmp_old; DROP TABLE IF EXISTS {cls.__table_name__}_tmp_old;"""
     q += f"""COMMIT; PRAGMA foreign_keys = on;"""
