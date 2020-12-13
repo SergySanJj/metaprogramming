@@ -15,7 +15,7 @@ from py2sqlite.db_types import *
 
 ## Documentation 
 
-<a href="/docs/py2sqlite.html">Documentation</a>
+<a href="docs/py2sqlite.html">Documentation</a>
 
 ## Connection
 
