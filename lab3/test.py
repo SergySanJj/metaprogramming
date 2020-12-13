@@ -1,5 +1,5 @@
 from py2sql import *
-from py2sql.db_object import DBObject, Column, get_table_name, create_table_query, ForeignKey
+from py2sql.db_object import DBObject, Column, get_table_name, create_table_query, ForeignKey, insert_object_query
 from py2sql.sqlite_types.integer import Integer
 
 
@@ -13,13 +13,14 @@ from py2sql.sqlite_types.integer import Integer
 # print(db.db_table_size("test4"))
 #
 # db.db_disconnect()
+from py2sql.sqlite_types.string import String
 
 
 class B(DBObject):
     __table_name__ = "b_table"
 
     val1 = Column(Integer, primary_key=True)
-    val2 = Column(Integer, foreign_key=ForeignKey("A", "id"))
+    val2 = Column(String, foreign_key=ForeignKey("A", "id"))
     val3 = Column(Integer, foreign_key=ForeignKey("R", "id", cascade=True))
 
     def test_f(self):
@@ -28,10 +29,12 @@ class B(DBObject):
 
 print(get_table_name(B))
 
-a = B(val1=123, kk="dsaw")
+a = B(val1=123, val2="Robert used text", val3=4)
 
 print(a)
 print(a.val1)
 
 print(B.val1)
 print(create_table_query(B))
+print(insert_object_query(a))
+

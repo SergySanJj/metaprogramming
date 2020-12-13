@@ -7,9 +7,7 @@ class SQLiteType(ABC):
     def __init__(self):
         self.val = None
 
+    @staticmethod
     @abstractmethod
-    def set_to(self, value):
-        self.val = value
-
-    def get(self):
-        return self.val
+    def value_to_str(val) -> str:
+        return str(val)
