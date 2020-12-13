@@ -135,7 +135,7 @@ class Py2SQL:
         # print(col_info)
         if len(col_info) > 0:
             q = modify_table_query(db_class, col_info)
-            print(q)
+            # print(q)
             # cursor = self.cursor
             # cursor.executescript(q)
             # self.__connection.commit()
