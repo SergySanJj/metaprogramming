@@ -1,6 +1,6 @@
 from abc import ABC
 
-from .sqlite_type import DBType
+from .db_type import DBType
 from .utils import typecheck
 
 

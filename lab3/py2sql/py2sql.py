@@ -3,7 +3,8 @@ import sqlite3
 from typing import List, Tuple, Any, Type
 import logging
 
-from py2sql.db_object import DBObject, insert_object_query, create_table_query, foreign_keys
+from py2sql.db_objects import DBObject
+from .queries import insert_object_query, create_table_query
 
 
 class Py2SQL:
@@ -100,10 +101,6 @@ class Py2SQL:
             print("NEEDS to modify")
         else:
             q = create_table_query(db_class)
-            fk = foreign_keys(db_class)
-            for k in fk:
-                pass
-
             print(q)
             self.__run_single_query(q)
 

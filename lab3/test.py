@@ -1,22 +1,11 @@
 from py2sql import *
 
-from py2sql.db_object import DBObject, Column, get_table_name, create_table_query, ForeignKey, insert_object_query, \
-    foreign_keys
-
-from py2sql.sqlite_types import *
+from py2sql.db_objects import DBObject, Column, ForeignKey
+from py2sql.queries import create_table_query, insert_object_query
+from py2sql.db_types import *
 
 db = Py2SQL()
 db.db_connect("mydatabase.db")
-
-
-# print(db.db_name())
-#
-# print(db.db_tables())
-# print(db.db_size())
-# print(db.db_table_structure("test4"))
-# print(db.db_table_size("test4"))
-#
-# db.db_disconnect()
 
 
 class A(DBObject):
@@ -50,8 +39,6 @@ class C(B):
     val7 = Column(DBInteger)
 
 
-# print(get_table_name(B))
-
 a = B(val1=123,
       val2="Robert used text",
       val3=4,
@@ -68,5 +55,5 @@ print(insert_object_query(a))
 
 print(create_table_query(C))
 print(db.save_class(B))
-print(foreign_keys(B))
+print(B.class_foreign_keys)
 db.save_object(a)

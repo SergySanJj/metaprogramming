@@ -4,7 +4,7 @@ from array import array
 
 import jsonpickle
 
-from .sqlite_type import DBType
+from .db_type import DBType
 from .utils import typecheck
 
 
