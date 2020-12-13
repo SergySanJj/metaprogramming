@@ -108,6 +108,8 @@ Column class has additional parameters:
 One entity can have only one primary key
 
 ```python
+from py2sqlite import Py2SQL
+from py2sqlite.db_objects import *
 from py2sqlite.db_types import *
 
 class SampleDataClass(DBObject):
@@ -116,6 +118,27 @@ class SampleDataClass(DBObject):
     int_var = Column(DBInteger, primary_key=True)
     float_var = Column(DBFloat)
     str_var = Column(DBString)
+    
+```
+
+To set foreign key use next syntax
+
+```python
+from py2sqlite import Py2SQL
+from py2sqlite.db_objects import *
+from py2sqlite.db_types import *
+
+class A(DBObject):
+    __table_name__ = "a_table"
+    id = Column(DBInteger, primary_key=True)
+
+class SampleDataClass(DBObject):
+    __table_name__ = "sample_table_name"
+
+    int_var = Column(DBInteger, primary_key=True)
+    float_var = Column(DBFloat)
+    str_var = Column(DBString)
+    a_reference = Column(DBInteger,  foreign_key=ForeignKey(A, "id", cascade=True))
     
 ```
 
