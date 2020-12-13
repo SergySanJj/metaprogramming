@@ -51,3 +51,20 @@ def insert_object_query(db_object: DBObject):
     q += f"VALUES({','.join(vals)})"
 
     return q + ";"
+
+
+def find_object_by_pk_query(db_object: DBObject, default_pk=True):
+    q = f"SELECT * FROM {db_object.__table_name__}\n WHERE "
+    options = []
+
+    p_k = db_object.obj_primary_keys()
+    if not default_pk:
+        p_k = [x for x in p_k if x.col_type != DBInteger]
+
+    for p in p_k:
+        s = f"{p.name} = {p.col_type.value_to_str(db_object.__getattribute__(p.name))}"
+        options.append(s)
+
+    where = " AND ".join(options)
+    q += where
+    return q

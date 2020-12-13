@@ -57,8 +57,21 @@ print(create_table_query(B))
 print(insert_object_query(a))
 
 print(create_table_query(C))
-# print(db.save_class(B))
+print(db.save_class(B))
 print(B.class_foreign_keys())
-# db.save_object(a)
 
 db.save_hierarchy(B)
+db.save_object(a)
+
+
+class StrPrim(DBObject):
+    __table_name__ = "str_table"
+
+    str_val = Column(DBString, primary_key=True)
+
+
+str_pr = StrPrim(str_val="sssss")
+
+db.save_class(StrPrim)
+
+db.save_object(str_pr)

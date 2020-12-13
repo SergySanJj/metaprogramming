@@ -44,8 +44,15 @@ class DBObject(ABC):
         return self.__class__.class_columns()
 
     @classmethod
-    def class_foreign_keys(cls) -> List[Any]:
+    def class_foreign_keys(cls) -> List[ForeignKey]:
         return [c.foreign_key for c in cls.class_columns() if c.foreign_key]
 
-    def obj_foreign_keys(self) -> List[Any]:
+    def obj_foreign_keys(self) -> List[ForeignKey]:
         return self.__class__.class_foreign_keys()
+
+    @classmethod
+    def class_primary_keys(cls) -> List[Column]:
+        return [c for c in cls.class_columns() if c.primary_key]
+
+    def obj_primary_keys(self) -> List[Column]:
+        return self.__class__.class_primary_keys()
