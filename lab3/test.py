@@ -19,14 +19,15 @@ db.db_connect("mydatabase.db")
 # db.db_disconnect()
 
 
-class A(DBObject):
-    __table_name__ = "a_table"
-    id = Column(DBInteger, primary_key=True)
-
-
 class R(DBObject):
     __table_name__ = "r_table"
     id = Column(DBInteger, primary_key=True)
+
+
+class A(DBObject):
+    __table_name__ = "a_table"
+    id = Column(DBInteger, primary_key=True)
+    r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
 
 
 class B(DBObject):
@@ -49,6 +50,8 @@ class C(B):
 
     val7 = Column(DBInteger)
 
+    r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
+
 
 # print(get_table_name(B))
 
@@ -67,6 +70,8 @@ print(create_table_query(B))
 print(insert_object_query(a))
 
 print(create_table_query(C))
-print(db.save_class(B))
+# print(db.save_class(B))
 print(foreign_keys(B))
-db.save_object(a)
+# db.save_object(a)
+
+db.save_hierarchy(B)

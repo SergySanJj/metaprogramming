@@ -3,7 +3,7 @@ import sqlite3
 from typing import List, Tuple, Any, Type
 import logging
 
-from py2sql.db_object import DBObject, insert_object_query, create_table_query, foreign_keys
+from py2sql.db_object import DBObject, insert_object_query, create_table_query, foreign_keys, ForeignKey
 
 
 class Py2SQL:
@@ -93,22 +93,37 @@ class Py2SQL:
         self.__run_single_query(q, commit=True)
 
     def save_class(self, db_class: Type[DBObject]):
-        # TODO: add check if table exists -> modify it
         col_info = self.__run_single_query(f"PRAGMA table_info('{db_class.__table_name__}')")
         print(col_info)
         if len(col_info) > 0:
+            # TODO: add check if table exists -> modify it
             print("NEEDS to modify")
         else:
             q = create_table_query(db_class)
-            fk = foreign_keys(db_class)
-            for k in fk:
-                pass
+            refs: List[Type[DBObject]] = []
+            Py2SQL.__traverse_references(db_class, refs)
+
+            for k in refs:
+                self.save_class(k)
 
             print(q)
             self.__run_single_query(q)
 
-    def save_hierarchy(self, root_class):
-        pass
+    @staticmethod
+    def __traverse_references(root: Type[DBObject], res: List[Any]) -> List[Type[DBObject]]:
+        fk: List[ForeignKey] = foreign_keys(root)
+        for k in fk:
+            ref = k.ref_table
+            if ref not in res:
+                res.append(ref)
+                Py2SQL.__traverse_references(ref, res)
+        return res
+
+    def save_hierarchy(self, root_class: Type[DBObject]):
+        self.save_class(root_class)
+        subclasses = root_class.__subclasses__()
+        for s in subclasses:
+            self.save_hierarchy(s)
 
     def delete_object(self, db_object: Type[DBObject]):
         pass
@@ -117,7 +132,10 @@ class Py2SQL:
         pass
 
     def delete_hierarchy(self, root_class):
-        pass
+        self.delete_class(root_class)
+        subclasses = root_class.__subclasses__()
+        for s in subclasses:
+            self.delete_hierarchy(s)
 
     def __run_single_query(self, query, commit=False) -> List[Any]:
         cursor = self.cursor
