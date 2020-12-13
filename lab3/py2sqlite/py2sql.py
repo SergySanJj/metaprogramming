@@ -6,7 +6,7 @@ import logging
 from py2sqlite.db_objects import DBObject, ForeignKey
 from .db_types import DBInteger
 from .queries import insert_object_query, create_table_query, find_object_by_pk_query, update_object_by_pk_query, \
-    modify_table_query
+    modify_table_query, delete_object_query, delete_table_query
 
 
 class Py2SQL:
@@ -100,7 +100,7 @@ class Py2SQL:
             q = update_object_by_pk_query(db_object)
             self.__run_single_query(q, commit=True)
 
-    def _find_by_pk(self, db_object):
+    def _find_by_pk(self, db_object: DBObject):
         q = find_object_by_pk_query(db_object, False)
         return self.__run_single_query_flatten(q)
 
@@ -140,11 +140,13 @@ class Py2SQL:
         for s in subclasses:
             self.save_hierarchy(s)
 
-    def delete_object(self, db_object: Type[DBObject]):
-        pass
+    def delete_object(self, db_object: DBObject):
+        q = delete_object_query(db_object)
+        self.__run_single_query(q, commit=True)
 
-    def delete_class(self, db_class):
-        pass
+    def delete_class(self, db_class: Type[DBObject]):
+        q = delete_table_query(db_class)
+        self.__run_single_query(q, commit=True)
 
     def delete_hierarchy(self, root_class):
         self.delete_class(root_class)
