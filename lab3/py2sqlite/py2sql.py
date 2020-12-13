@@ -202,8 +202,14 @@ class Py2SQL:
             self.delete_hierarchy(s)
 
     def max_id(self, table: Type[DBObject], column_name: str):
+        """
+        Find max column value in table
+
+        :param table: table to be searched
+        :param column_name: column name on which to search max value
+        :return: max value
+        """
         res = self.__run_single_query_flatten(f"""SELECT max({column_name}) FROM {table.__table_name__};""")[0]
-        # print(res)
         return res
 
     def __run_single_query(self, query, commit=False) -> List[Any]:

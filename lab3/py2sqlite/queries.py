@@ -154,8 +154,6 @@ def form_statement(db_object: DBObject, columns: List[Column], statement="WHERE"
 def modify_table_query(cls: Type[DBObject], old_col_info):
     q = ""
 
-    # Drop columns
-
     # Modify columns
     q += "PRAGMA foreign_keys=off;BEGIN TRANSACTION;\n"
     q += f"""ALTER TABLE {cls.__table_name__} RENAME TO {cls.__table_name__}_tmp_old;\n"""
@@ -165,10 +163,5 @@ def modify_table_query(cls: Type[DBObject], old_col_info):
     q += f""" SELECT {', '.join([x[1] for x in old_col_info if x[1] in [r.name for r in cls.class_columns()]])} FROM """
     q += f"""{cls.__table_name__}_tmp_old; DROP TABLE IF EXISTS {cls.__table_name__}_tmp_old;"""
     q += f"""COMMIT; PRAGMA foreign_keys = on;\n"""
-    # Add columns
-    
-    q += "PRAGMA foreign_keys=off;BEGIN TRANSACTION;\n"
-
-    q += "COMMIT; PRAGMA foreign_keys = on;"
 
     return q
