@@ -61,8 +61,6 @@ db.db_table_size()
 ### Usage example
 
 ```python
-from py2sqlite import *
-
 from py2sqlite import Py2SQL
 from py2sqlite.db_objects import *
 from py2sqlite.db_types import *
@@ -74,6 +72,7 @@ db.db_connect("mydatabase.db")
 class R(DBObject):
     __table_name__ = "r_table"
     id = Column(DBInteger, primary_key=True)
+    some_field = Column(DBString)
 
 
 class A(DBObject):
@@ -85,49 +84,60 @@ class A(DBObject):
 class B(DBObject):
     __table_name__ = "b_table"
 
+    # Integer primary keys are automatically assigned as autoincremental values
     val1 = Column(DBInteger, primary_key=True)
-    val2 = Column(DBString, foreign_key=ForeignKey(A, "id"))
-    val3 = Column(DBInteger, foreign_key=ForeignKey(R, "id", cascade=True))
-
+    val2 = Column(DBString)
     val4 = Column(DBList)
     val5 = Column(DBSet)
     val6 = Column(DBDict)
+
+    r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id", cascade=True))
+    a_ref = Column(DBInteger, foreign_key=ForeignKey(A, "id", cascade=True))
 
     def test_f(self):
         pass
 
 
+# C will inherit all B fields and add specific own
 class C(B):
     __table_name__ = "c_table"
 
     val7 = Column(DBInteger)
-
     r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
 
 
-a = B(val1=123,
-      val2="Robert used text",
-      val3=4,
+db.save_class(A)
+db.save_class(R)
+db.save_hierarchy(B)
+
+r = R(some_field="some string")
+
+a = A(r_ref=1)
+
+b = B(val2="Robert used text",
+      r_ref=1,
+      a_ref=1,
       val4=[1, 2, 3],
       val5={1, 2, 3, 4},
       val6={"key": [1, 2]})
 
-print(a)
-print(a.val1)
+c = C(val2="Robert used text",
+      r_ref=1,
+      a_ref=1,
+      val4=[1, 2, 3],
+      val5={1, 2, 3, 4},
+      val6={"key": [1, 2]},
+      val7=12)
 
-print(B.val1)
-
-print(db.save_class(B))
-print(B.class_foreign_keys())
-
-db.save_hierarchy(B)
-db.save_object(a)
-db.delete_hierarchy(R)
-
+objects = [r, a, b, c]
+for i in range(5):
+    for o in objects:
+        db.save_object(o)
 
 db.delete_object(a)
 
 
+# This object will have string primary key and so only single row with equal pk will exist
 class StrPrim(DBObject):
     __table_name__ = "str_table"
 
@@ -138,7 +148,7 @@ class StrPrim(DBObject):
 str_pr = StrPrim(str_val="sssss", other_val="ab")
 
 db.save_class(StrPrim)
-
 db.save_object(str_pr)
-
+db.save_object(str_pr)
+db.save_object(str_pr)
 ```
