@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from typing import List
+from typing import List, Tuple
 import logging
 
 
@@ -73,13 +73,26 @@ class Py2SQL:
         page_count = cursor.fetchall()
         cursor.execute("PRAGMA page_size")
         page_size = cursor.fetchall()
-        return flatten_structure(page_count)[0] * flatten_structure(page_size)[0]
+        return flatten_structure(page_count)[0] * flatten_structure(page_size)[0] / (1024 * 1024)
 
-    def db_table_structure(self, table):
-        pass
+    def db_table_structure(self, table) -> List[Tuple[int, str, str]]:
+        """Get list of tuples with info about table attributes [(id:int, name:str, type:str)]"""
+        cursor = self.cursor
+        cursor.execute(f"PRAGMA table_info('{table}')")
+        res = cursor.fetchall()
+        return [(int(x[0]), str(x[1]), str(x[2])) for x in res]
 
     def db_table_size(self, table):
-        pass
+        """Get estimated size of the table in Mb"""
+        cursor = self.cursor
+        cursor.execute(f"""
+        SELECT COUNT(*) *  -- The number of rows in the table
+         ( 24 +        -- The length of all 4 byte int columns
+           12 +        -- The length of all 8 byte int columns
+           128 )       -- The estimate of the average length of all string columns
+        FROM {table}
+        """)
+        return flatten_structure(cursor.fetchall())[0] / (1024 * 1024)
 
     # py -> sql
 
