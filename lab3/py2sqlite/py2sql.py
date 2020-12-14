@@ -115,7 +115,7 @@ class Py2SQL:
         :param db_object: object to add
         """
         if not isinstance(db_object, DBObject):
-            print(True)
+            logging.warning(f"Can only save objects inherited from DBObject")
             return
         if db_object.hierarchy_ref():
             ref: Column = db_object.hierarchy_ref()
@@ -127,7 +127,6 @@ class Py2SQL:
             for c in par_cols:
                 values_to_save[c.name] = db_object.__getattribute__(c.name)
 
-            print(values_to_save)
             ref_table: Type[DBObject] = ref.col_type
             ref_pk = ref_table.class_primary_keys()[0]
             setattr(db_object, f"hierarchy_ref_{ref.col_type.__name__}", ref_table(**values_to_save))
