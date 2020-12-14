@@ -58,8 +58,8 @@ class DBObjectMeta(ABCMeta):
             cls.db_type = pk.col_type.db_type
             cls.python_type = cls
             cls.pk_name = pk.name
-        elif not inspect.isabstract(cls):
-            logging.warning(f'Class {cls.__name__} cannot be included in other DBObject')
+        elif not inspect.isabstract(cls) and cls.__name__ != 'DBObject':
+            logging.warning(f'Class {cls.__name__} cannot be aggregated in other DBObject')
 
 
 class DBObject(DBType, metaclass=DBObjectMeta):
