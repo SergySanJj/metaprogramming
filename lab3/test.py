@@ -28,8 +28,9 @@ class B(DBObject):
     val5 = Column(DBSet)
     val6 = Column(DBDict)
 
+    # aggregation
+    val_a = Column(A)
     r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id", cascade=True))
-    a_ref = Column(DBInteger, foreign_key=ForeignKey(A, "id", cascade=True))
 
     def test_f(self):
         pass
@@ -42,40 +43,45 @@ class C(B):
     val7 = Column(DBInteger)
     r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
 
+
 # Even if next 2 lines will be commented out, tables A and R will be saved
 # due to the outgoing references in B
-db.save_class(A)
+
+# db.save_class(A)
 db.save_class(R)
-db.save_hierarchy(B)
+db.save_class(B)
+# db.save_hierarchy(B)
 
 r = R(some_field="some string")
 db.save_object(r)
 
 a = A(r_ref=db.max_id(R, "id"))
-db.save_object(a)
-
+# db.save_object(a)
 
 b = B(val2="Robert used text",
       r_ref=db.max_id(R, "id"),
-      a_ref=db.max_id(A, "id"),
+      val_a=a,
       val4=[1, 2, 3],
       val5={1, 2, 3, 4},
       val6={"key": [1, 2]})
 
-c = C(val2="Robert used text",
-      r_ref=db.max_id(R, "id"),
-      a_ref=db.max_id(A, "id"),
-      val4=[1, 2, 3],
-      val5={1, 2, 3, 4},
-      val6={"key": [1, 2]},
-      val7=12)
+# c = C(val2="Robert used text",
+#       r_ref=db.max_id(R, "id"),
+#       a_ref=db.max_id(A, "id"),
+#       val4=[1, 2, 3],
+#       val5={1, 2, 3, 4},
+#       val6={"key": [1, 2]},
+#       val7=12)
 
-objects = [r, a, b, c]
-for i in range(5):
-    for o in objects:
-        db.save_object(o)
+db.save_object(b)
 
-db.delete_object(a)
+
+# objects = [r, a, b, c]
+# for i in range(5):
+#     for o in objects:
+#         db.save_object(o)
+
+# db.delete_object(a)
 
 
 # This object will have string primary key and so only single row with equal pk will exist

@@ -114,14 +114,26 @@ class Py2SQL:
 
         :param db_object: object to add
         """
+        # add all aggregated DBObjects recursively
+        for col in db_object.obj_columns():
+            if issubclass(col.col_type, DBObject):
+                self.save_object(getattr(db_object, col.name))
+
         p_k = db_object.obj_primary_keys()
         p_k = [x for x in p_k if x.col_type != DBInteger]
         if len(p_k) == 0 or len(self._find_by_pk(db_object)) == 0:
             q = insert_object_query(db_object)
+            # print(q)
             self.__run_single_query(q, commit=True)
         else:
             q = update_object_by_pk_query(db_object)
             self.__run_single_query(q, commit=True)
+
+        # update autoincremented integer primary key value in object
+        if db_object.pk_name is not None:
+            pk = db_object.pk_name
+            if getattr(db_object.__class__, pk).col_type == DBInteger:
+                setattr(db_object, pk, self.max_id(db_object.__class__, pk))
 
     def _find_by_pk(self, db_object: DBObject):
         q = find_object_by_pk_query(db_object, False)
@@ -133,6 +145,11 @@ class Py2SQL:
 
         :param db_class: class with a corresponding table to add
         """
+        # add all aggregated DBObjects tables recursively
+        for col in db_class.class_columns():
+            if issubclass(col.col_type, DBObject):
+                self.save_class(col.col_type)
+
         col_info = self.__run_single_query(f"PRAGMA table_info('{db_class.__table_name__}')")
         # print(col_info)
         if len(col_info) > 0:

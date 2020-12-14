@@ -14,11 +14,6 @@ class DBBaseType(DBType, ABC):
     def value_to_str(cls, val) -> str:
         return str(val)
 
-    @classmethod
-    @typecheck
-    def convert_from_db(cls, val):
-        return val
-
 
 class DBFloat(DBBaseType, ABC):
     db_type = "REAL"

@@ -20,11 +20,6 @@ class DBCollection(DBType, ABC):
     def value_to_str(cls, val) -> str:
         return f"'{json.dumps(jsonpickle.encode(val))}'"
 
-    @classmethod
-    @typecheck
-    def convert_from_db(cls, val):
-        return jsonpickle.decode(val)
-
 
 class DBDict(DBCollection):
     python_type = dict
