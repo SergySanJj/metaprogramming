@@ -1,3 +1,4 @@
+import inspect
 from typing import Type, List
 
 from .db_objects import DBObject, Column
@@ -12,9 +13,15 @@ def create_table_query(cls: Type[DBObject]) -> str:
     :return: generated query
     """
 
+    # print(inspect.getmro(cls))
+
     values = []
     references = []
-    for c in cls.class_columns():
+    columnss = cls.class_columns()
+    if cls.class_hierarchy_ref():
+        columnss.append(cls.class_hierarchy_ref())
+
+    for c in columnss:
         v = c.name + " " + c.col_type.db_type + " "
 
         if c.primary_key:
@@ -24,7 +31,7 @@ def create_table_query(cls: Type[DBObject]) -> str:
 
         values.append("\n" + v)
 
-    for c in cls.class_columns():
+    for c in columnss:
         if c.foreign_key:
             v = f"\nFOREIGN KEY ({c.name}) REFERENCES {c.foreign_key.ref_table.__table_name__} " \
                 f"({c.foreign_key.ref_column})"
@@ -48,7 +55,12 @@ def insert_object_query(db_object: DBObject) -> str:
     q = f"INSERT INTO {db_object.__table_name__}"
 
     params, vals = [], []
-    for c in db_object.obj_columns():
+
+    columnss = db_object.obj_columns()
+    if db_object.hierarchy_ref():
+        columnss.append(db_object.hierarchy_ref())
+
+    for c in columnss:
         append = False
         if c.primary_key:
             if c.col_type != DBInteger:
@@ -61,8 +73,11 @@ def insert_object_query(db_object: DBObject) -> str:
             val = getattr(db_object, c.name)
             vals.append(c.col_type.value_to_str(val))
 
-    q += f" ({','.join(params)})\n"
-    q += f"VALUES({','.join(vals)})"
+    if len(params) > 0:
+        q += f" ({','.join(params)})\n"
+        q += f"VALUES({','.join(vals)})"
+    else:
+        q += " DEFAULT VALUES "
 
     return q + ";"
 

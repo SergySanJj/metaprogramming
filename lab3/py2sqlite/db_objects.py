@@ -1,7 +1,7 @@
 from abc import ABC, ABCMeta
 import inspect
 import logging
-from typing import Type, List
+from typing import Type, List, Any
 
 from .db_types import DBType, typecheck
 
@@ -11,7 +11,7 @@ class Column:
     Represents a column of a table in object type declaration
     """
 
-    def __init__(self, col_type: Type[DBType], foreign_key=None, primary_key=False):
+    def __init__(self, col_type: Type[DBType], foreign_key=None, primary_key=False, hierarchy_ref=False):
         """
 
         :param col_type: type for all values in a column
@@ -22,6 +22,7 @@ class Column:
         self.foreign_key: ForeignKey = foreign_key
         self.primary_key = primary_key
         self.name = None
+        self.hierarchy_ref = hierarchy_ref
 
     def __set_name__(self, owner, name):
         self.name = name
@@ -53,11 +54,21 @@ class DBObjectMeta(ABCMeta):
     def __init__(cls, *args, **kwargs):
         super().__init__(*args, **kwargs)
         pks = cls.class_primary_keys()
+        pks = [x for x in pks if x not in cls.__base__.class_primary_keys()]
+
         if len(pks) == 1:
             pk = pks[0]
             cls.db_type = pk.col_type.db_type
             cls.python_type = cls
             cls.pk_name = pk.name
+
+            if cls.__base__ != DBObject:
+                b: Type[DBObject] = cls.__base__
+                setattr(cls, f"hierarchy_ref_{b.__name__}",
+                        Column(b, hierarchy_ref=True))
+                ro = getattr(cls, f"hierarchy_ref_{b.__name__}")
+                ro.name = f"hierarchy_ref_{b.__name__}"
+
         elif not inspect.isabstract(cls) and cls.__name__ != 'DBObject':
             logging.warning(f'Class {cls.__name__} cannot be aggregated in other DBObject')
 
@@ -77,7 +88,7 @@ class DBObject(DBType, metaclass=DBObjectMeta):
 
         :param kwargs: dict of exact values for each column
         """
-        obj_column_names = [c.name for c in self.obj_columns()]
+        obj_column_names = [c.name for c in self.obj_columns(True)]
         for k, v in kwargs.items():
             if k in obj_column_names:
                 setattr(self, k, v)
@@ -88,11 +99,29 @@ class DBObject(DBType, metaclass=DBObjectMeta):
         return str(self.__dict__)
 
     @classmethod
-    def class_columns(cls) -> List[Column]:
-        return [getattr(cls, a) for a in dir(cls) if isinstance(getattr(cls, a), Column)]
+    def class_columns(cls, with_parent=False) -> List[Column]:
+        res = [getattr(cls, a) for a in dir(cls) if isinstance(getattr(cls, a), Column) if
+               not getattr(cls, a).hierarchy_ref]
 
-    def obj_columns(self) -> List[Column]:
-        return self.__class__.class_columns()
+        if not with_parent:
+            if cls.class_hierarchy_ref():
+                reference: Column = cls.class_hierarchy_ref()
+                res = [x for x in res if x not in reference.col_type.class_columns()]
+        return res
+
+    def obj_columns(self, with_parent=False) -> List[Column]:
+        return self.__class__.class_columns(with_parent)
+
+    @classmethod
+    def class_hierarchy_ref(cls):
+        a = [getattr(cls, a) for a in dir(cls) if isinstance(getattr(cls, a), Column) if getattr(cls, a).hierarchy_ref]
+        if len(a) > 0:
+            return a[0]
+        else:
+            return None
+
+    def hierarchy_ref(self):
+        return self.__class__.class_hierarchy_ref()
 
     @classmethod
     def class_foreign_keys(cls) -> List[ForeignKey]:

@@ -39,49 +39,42 @@ class B(DBObject):
 # C will inherit all B fields and add specific own
 class C(B):
     __table_name__ = "c_table"
-
-    val7 = Column(DBInteger)
-    r_ref = Column(DBInteger, foreign_key=ForeignKey(R, "id"))
+    additional = Column(DBInteger, primary_key=True)
 
 
 # Even if next 2 lines will be commented out, tables A and R will be saved
 # due to the outgoing references in B
-
-# db.save_class(A)
+db.save_class(A)
 db.save_class(R)
-db.save_class(B)
-# db.save_hierarchy(B)
+
+db.save_hierarchy(B)
 
 r = R(some_field="some string")
 db.save_object(r)
 
-a = A(r_ref=db.max_id(R, "id"))
-# db.save_object(a)
-
 b = B(val2="Robert used text",
       r_ref=db.max_id(R, "id"),
-      val_a=a,
+      val_a=A(r_ref=db.max_id(R, "id")),
       val4=[1, 2, 3],
       val5={1, 2, 3, 4},
       val6={"key": [1, 2]})
 
-# c = C(val2="Robert used text",
-#       r_ref=db.max_id(R, "id"),
-#       a_ref=db.max_id(A, "id"),
-#       val4=[1, 2, 3],
-#       val5={1, 2, 3, 4},
-#       val6={"key": [1, 2]},
-#       val7=12)
+c = C(val2="Other",
+      r_ref=db.max_id(R, "id"),
+      val_a=A(r_ref=db.max_id(R, "id")),
+      val4=[1],
+      val5={1},
+      val6={"key": [1, 2]},
+      additional=2)
 
+db.save_object(c)
 db.save_object(b)
 
+# User will get warning from this class because it does not have a primary key to be referenced
+class NoPk(DBObject):
+    __table_name__ = "str_table"
 
-# objects = [r, a, b, c]
-# for i in range(5):
-#     for o in objects:
-#         db.save_object(o)
-
-# db.delete_object(a)
+    other_val = Column(DBInteger)
 
 
 # This object will have string primary key and so only single row with equal pk will exist
@@ -90,9 +83,10 @@ class StrPrim(DBObject):
 
     str_val = Column(DBString, primary_key=True)
     other_val = Column(DBString)
+    # no_ref = Column(DBInteger, foreign_key=ForeignKey(NoPk, "other_val", cascade=True))
 
 
-str_pr = StrPrim(str_val="sssss", other_val="ab")
+str_pr = StrPrim(str_val="sss", other_val="ab")
 
 db.save_class(StrPrim)
 db.save_object(str_pr)

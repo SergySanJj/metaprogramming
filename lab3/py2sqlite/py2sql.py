@@ -3,7 +3,7 @@ import os
 import sqlite3
 from typing import List, Tuple, Any, Type
 
-from py2sqlite.db_objects import DBObject, ForeignKey
+from py2sqlite.db_objects import DBObject, ForeignKey, Column
 from .db_types import DBInteger
 from .queries import insert_object_query, create_table_query, find_object_by_pk_query, update_object_by_pk_query, \
     modify_table_query, delete_object_query, delete_table_query
@@ -114,8 +114,29 @@ class Py2SQL:
 
         :param db_object: object to add
         """
+        if not isinstance(db_object, DBObject):
+            print(True)
+            return
+        if db_object.hierarchy_ref():
+            ref: Column = db_object.hierarchy_ref()
+
+            values_to_save = {}
+            par_cols: List[Column] = ref.col_type.class_columns()
+            par_cols = [x for x in par_cols if not (x.col_type == DBInteger and x.primary_key)]
+
+            for c in par_cols:
+                values_to_save[c.name] = db_object.__getattribute__(c.name)
+
+            print(values_to_save)
+            ref_table: Type[DBObject] = ref.col_type
+            ref_pk = ref_table.class_primary_keys()[0]
+            setattr(db_object, f"hierarchy_ref_{ref.col_type.__name__}", ref_table(**values_to_save))
+
         # add all aggregated DBObjects recursively
-        for col in db_object.obj_columns():
+        recursive = db_object.obj_columns()
+        if db_object.hierarchy_ref():
+            recursive.append(db_object.hierarchy_ref())
+        for col in recursive:
             if issubclass(col.col_type, DBObject):
                 self.save_object(getattr(db_object, col.name))
 
@@ -123,7 +144,6 @@ class Py2SQL:
         p_k = [x for x in p_k if x.col_type != DBInteger]
         if len(p_k) == 0 or len(self._find_by_pk(db_object)) == 0:
             q = insert_object_query(db_object)
-            # print(q)
             self.__run_single_query(q, commit=True)
         else:
             q = update_object_by_pk_query(db_object)
