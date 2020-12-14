@@ -174,8 +174,12 @@ def modify_table_query(cls: Type[DBObject], old_col_info):
     q += f"""ALTER TABLE {cls.__table_name__} RENAME TO {cls.__table_name__}_tmp_old;\n"""
     q += create_table_query(cls)
 
-    q += f"""INSERT INTO {cls.__table_name__} ({', '.join([x[1] for x in old_col_info if x[1] in [r.name for r in cls.class_columns()]])})"""
-    q += f""" SELECT {', '.join([x[1] for x in old_col_info if x[1] in [r.name for r in cls.class_columns()]])} FROM """
+    columns = cls.class_columns()
+    if cls.class_hierarchy_ref():
+        columns.append(cls.class_hierarchy_ref())
+
+    q += f"""INSERT INTO {cls.__table_name__} ({', '.join([x[1] for x in old_col_info if x[1] in [r.name for r in columns]])})"""
+    q += f""" SELECT {', '.join([x[1] for x in old_col_info if x[1] in [r.name for r in columns]])} FROM """
     q += f"""{cls.__table_name__}_tmp_old; DROP TABLE IF EXISTS {cls.__table_name__}_tmp_old;"""
     q += f"""COMMIT; PRAGMA foreign_keys = on;\n"""
 
